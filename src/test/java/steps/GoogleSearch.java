@@ -3,6 +3,8 @@ package steps;
 import base.DriverManager;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import pages.LoginPage;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;

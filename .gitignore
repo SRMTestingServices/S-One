@@ -1,7 +1,15 @@
+# Ignore Maven target folder (compiled files)
 target/
+*.class
+
+# Ensure test-output is ignored correctly
+**/test-output/
+
+# Include the Maven wrapper and specific target directories for builds and dependencies
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+!**/src/test/**/test-output/
 
 ### IntelliJ IDEA ###
 .idea/
@@ -33,10 +41,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
-
-# Ignore Maven target folder (compiled files)
-target/
-*.class
 
 # Ignore logs and temp files
 logs/
