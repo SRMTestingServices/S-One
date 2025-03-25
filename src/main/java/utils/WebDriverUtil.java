@@ -144,8 +144,8 @@ public class WebDriverUtil {
 	 * @param by   The {@link WebDriver} locator used to identify the listbox
 	 * @param item The value to be selected within the listbox
 	 */
-	public void selectListItem(By by, String item) {
-		Select dropDownList = new Select(driver.findElement(by));
+	public void selectListItem(WebElement element, String item) {
+		Select dropDownList = new Select(element);
 		dropDownList.selectByVisibleText(item);
 	}
 
@@ -154,9 +154,9 @@ public class WebDriverUtil {
 	 * 
 	 * @param by The {@link WebDriver} locator used to identify the element
 	 */
-	public void mouseOver(By by) {
+	public void mouseOver(WebElement element) {
 		Actions actions = new Actions(driver);
-		actions.moveToElement(driver.findElement(by)).build().perform();
+		actions.moveToElement(element).build().perform();
 	}
 
 	/**
