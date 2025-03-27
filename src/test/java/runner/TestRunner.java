@@ -1,7 +1,9 @@
 package runner;
 
+import com.aventstack.chaintest.plugins.ChainTestListener;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
+import org.testng.annotations.Listeners;
 
 @CucumberOptions(
         features = "src/test/resources/features",  // Path to feature files
@@ -9,5 +11,6 @@ import io.cucumber.testng.CucumberOptions;
         plugin = {"pretty", "html:reports/cucumber.html"},
         monochrome = true
 )
+@Listeners(ChainTestListener.class)
 public class TestRunner extends AbstractTestNGCucumberTests {
 }
