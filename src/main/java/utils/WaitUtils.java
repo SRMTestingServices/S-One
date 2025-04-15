@@ -8,10 +8,10 @@ import java.time.Duration;
 
 public class WaitUtils {
 
-    private WebDriver driver;
+    private static WebDriver driver;
 
     public WaitUtils(WebDriver driver) {
-        this.driver = driver;
+        WaitUtils.driver = driver;
     }
 
     public void waitForElementToBeClickable(WebElement element, int timeout) {
@@ -22,5 +22,9 @@ public class WaitUtils {
     public void waitForElementToBeVisible(WebElement element, int timeout) {
         new WebDriverWait(driver, Duration.ofSeconds(timeout))
                 .until(ExpectedConditions.visibilityOf(element));
+    }
+    public static void waitForPageToLoad(int timeout)
+    {
+        new WebDriverWait(driver, Duration.ofSeconds(timeout)).until(ExpectedConditions.jsReturnsValue("return document.readyState=='complete'"));
     }
 }

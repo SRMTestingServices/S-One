@@ -50,3 +50,9 @@ logs/
 # Ignore OS-specific files
 .DS_Store
 Thumbs.db
+/reports
+/.idea
+reports/cucumber.html
+.idea/workspace.xml
+*.html
+*.html

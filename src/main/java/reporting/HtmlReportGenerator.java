@@ -1,139 +1,167 @@
 package reporting;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class HtmlReportGenerator {
+	private static final String REPORT_DIR = "target/reports/";
 
-	public static void generateHtmlReport(String browser, String testCaseName, String projectName,
-			List<TestStep> testSteps, boolean imageLink) {
-		int totalSteps = testSteps.size();
-		int passCount = (int) testSteps.stream().filter(step -> step.status == Status.PASS).count();
-		int failCount = totalSteps - passCount;
+	public static void generateHtmlReport(String browser, String testName,
+										  String projectName, List<TestStep> testSteps,
+										  boolean isTestPassed, long durationMs) {
 
-		String htmlContent = String.format("""
-				<!DOCTYPE html>
-				<html>
-				<head>
-				    <meta charset="UTF-8">
-				    <title>Test Report - %s</title>
-				    <style>
-				        body {
-				            background: linear-gradient(to right, #4CAF50, #81C784); /* Gradient background */
-				            font-family: Verdana, Geneva, sans-serif;
-				            text-align: center;
-				        }
-				        table {
-				            width: 80%%;
-				            margin: 20px auto;
-				            border-collapse: collapse;
-				            background-color: white;
-				            box-shadow: 0px 0px 10px #ccc;
-				        }
-				        th, td {
-				            padding: 10px;
-				            border: 1px solid #ddd;
-				            text-align: left;
-				        }
-				        th {
-				            background-color: #4CAF50;
-				            color: white;
-				        }
-				        .pass {
-				            background-color: #c6efce;
-				            color: #006400;
-				            font-weight: bold;
-				        }
-				        .fail {
-				            background-color: #ffc7ce;
-				            color: #d8000c;
-				            font-weight: bold;
-				        }
-				        a {
-				            text-decoration: none;
-				            color: blue;
-				        }
-				        .footer {
-				            font-weight: bold;
-				            margin-top: 20px;
-				        }
-				    </style>
-				</head>
-				<body>
-				    <h2>Test Report - %s</h2>
-				    <h3>Project: %s | Browser: %s</h3>
-				    <table>
-				        <tr>
-				            <th>Step Number</th>
-				            <th>Step Name</th>
-				            <th>Step Description</th>
-				            <th>Status</th>
-				            <th>Screenshot</th>
-				        </tr>
-				""", testCaseName, testCaseName, projectName, browser);
+		try {
+			// Create report directory if it doesn't exist
+			Files.createDirectories(Paths.get(REPORT_DIR));
 
-		// Add test steps dynamically
-		for (TestStep step : testSteps) {
-			htmlContent += addTestStep(step, imageLink);
-		}
+			// Generate report filename with timestamp
+			String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+			String filename = String.format("%sTestReport_%s_%s.html",
+					REPORT_DIR,
+					testName.replace(" ", "_"),
+					timestamp);
 
-		// Footer Summary Section
-		htmlContent += String.format("""
-				    </table>
-				    <div class="footer">
-				        <p>Total Steps: %d | Passed: %d | Failed: %d</p>
-				    </div>
-				</body>
-				</html>
-				""", totalSteps, passCount, failCount);
+			// Build HTML content
+			String htmlContent = buildHtmlContent(browser, testName, projectName,
+					testSteps, isTestPassed, durationMs);
 
-		try (FileWriter writer = new FileWriter("TestReport.html")) {
-			writer.write(htmlContent);
-			System.out.println("Test report generated successfully: TestReport.html");
+			// Write to file
+			Files.write(Paths.get(filename), htmlContent.getBytes());
+			System.out.println("Report generated: " + filename);
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Failed to generate HTML report: " + e.getMessage());
 		}
 	}
 
-	public static String addTestStep(TestStep step, boolean imageLink) {
-		if (imageLink) {
-			return String.format("""
-					    <tr>
-					        <td>%s</td>
-					        <td>%s</td>
-					        <td>%s</td>
-					        <td class="%s">%s</td>
-					        <td><a href="%s" target="_blank">View Screenshot</a></td>
-					    </tr>
-					""", step.stepNumber, step.stepName, step.stepDescription, step.status.name().toLowerCase(),
-					step.status, step.screenshot);
-		} else {
-			return String.format("""
-					    <tr>
-					        <td>%s</td>
-					        <td>%s</td>
-					        <td>%s</td>
-					        <td class="%s">%s</td>
-					        <td><img src="%s" alt="Screenshot" width="150"></td>
-					    </tr>
-					""", step.stepNumber, step.stepName, step.stepDescription, step.status.name().toLowerCase(),
-					step.status, step.screenshot);
+	private static String buildHtmlContent(String browser, String testName,
+										   String projectName, List<TestStep> testSteps,
+										   boolean isTestPassed, long durationMs) {
+
+		StringBuilder html = new StringBuilder();
+		int passedSteps = (int) testSteps.stream().filter(s -> s.getStatus() == Status.PASS).count();
+		double passRate = testSteps.isEmpty() ? 0 : (passedSteps * 100.0 / testSteps.size());
+
+		// HTML Header and CSS
+		html.append("<!DOCTYPE html>\n")
+				.append("<html>\n<head>\n")
+				.append("<meta charset='UTF-8'>\n")
+				.append("<title>Test Report - ").append(testName).append("</title>\n")
+				.append("<style>\n")
+				.append("  body { font-family: Arial, sans-serif; margin: 20px; }\n")
+				.append("  .header { background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px; }\n")
+				.append("  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }\n")
+				.append("  th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }\n")
+				.append("  th { background-color: ").append(isTestPassed ? "#4CAF50" : "#f44336").append("; color: white; }\n")
+				.append("  .pass { color: #4CAF50; }\n")
+				.append("  .fail { color: #f44336; }\n")
+				.append("  .screenshot { max-width: 200px; cursor: pointer; transition: transform 0.3s; }\n")
+				.append("  .screenshot:hover { transform: scale(1.5); }\n")
+				.append("  .error { color: #d32f2f; font-size: 0.9em; margin-top: 5px; }\n")
+				.append("  .summary { font-weight: bold; margin-top: 20px; }\n")
+				.append("</style>\n</head>\n<body>\n");
+
+		// Report Header
+		html.append("<div class='header'>\n")
+				.append("<h2>").append(testName).append("</h2>\n")
+				.append("<p><strong>Project:</strong> ").append(projectName).append("</p>\n")
+				.append("<p><strong>Browser:</strong> ").append(browser).append("</p>\n")
+				.append("<p><strong>Status:</strong> <span class='")
+				.append(isTestPassed ? "pass'>PASSED" : "fail'>FAILED").append("</span></p>\n")
+				.append("<p><strong>Duration:</strong> ").append(formatDuration(durationMs)).append("</p>\n")
+				.append("<p><strong>Pass Rate:</strong> ").append(String.format("%.1f%%", passRate)).append("</p>\n")
+				.append("</div>\n");
+
+		// Test Steps Table
+		html.append("<table>\n")
+				.append("<tr>\n")
+				.append("  <th>Step #</th>\n")
+				.append("  <th>Description</th>\n")
+				.append("  <th>Status</th>\n")
+				.append("  <th>Screenshot</th>\n")
+				.append("  <th>Duration</th>\n")
+				.append("</tr>\n");
+
+		// Add each test step
+		for (TestStep step : testSteps) {
+			html.append("<tr>\n")
+					.append("  <td>").append(step.getStepNumber()).append("</td>\n")
+					.append("  <td>").append(step.getStepDescription()).append("</td>\n")
+					.append("  <td class='").append(step.getStatus().name().toLowerCase()).append("'>")
+					.append(step.getStatus()).append("</td>\n")
+					.append("  <td>").append(getScreenshotHtml(step.getScreenshot())).append("</td>\n")
+					.append("  <td>").append(step.getExecutionTime()).append(" ms</td>\n")
+					.append("</tr>\n");
+
+			// Add error message if failed
+			if (step.getStatus() == Status.FAIL && step.getErrorMessage() != null) {
+				html.append("<tr>\n")
+						.append("  <td colspan='6' class='error'>")
+						.append(step.getErrorMessage()).append("</td>\n")
+						.append("</tr>\n");
+			}
 		}
+
+		// Footer
+		html.append("</table>\n")
+				.append("<div class='summary'>\n")
+				.append("<p>Total Steps: ").append(testSteps.size())
+				.append(" | Passed: ").append(passedSteps)
+				.append(" | Failed: ").append(testSteps.size() - passedSteps).append("</p>\n")
+				.append("</div>\n")
+				.append("<script>\n")
+				.append("document.querySelectorAll('.screenshot').forEach(img => {\n")
+				.append("  img.addEventListener('click', () => window.open(img.src, '_blank'));\n")
+				.append("});\n")
+				.append("</script>\n")
+				.append("</body>\n</html>");
+
+		return html.toString();
 	}
 
-	public static void main(String[] args) {
-		// Test data
-		List<TestStep> testSteps = new ArrayList<>();
-		testSteps.add(new TestStep("1", "Step 1", "Test step 1 description", Status.PASS,
-				System.getProperty("user.dir") + "\\src\\test\\resources\\screenshots\\image1.png"));
-		testSteps.add(new TestStep("2", "Step 2", "Test step 2 description", Status.FAIL,
-				System.getProperty("user.dir") + "\\src\\test\\resources\\screenshots\\image2.png"));
-		testSteps.add(new TestStep("3", "Step 3", "Test step 3 description", Status.PASS,
-				System.getProperty("user.dir") + "\\src\\test\\resources\\screenshots\\image3.png"));
+	private static String getScreenshotHtml(String screenshotPath) {
+		if (screenshotPath == null || screenshotPath.isEmpty()) {
+			return "N/A";
+		}
 
-		// Generate report
-		generateHtmlReport("Chrome", "Login Test", "Project X", testSteps, false);
+		// Normalize all path separators
+		String normalizedPath = screenshotPath.replace("\\", "/");
+
+		// Remove any file:/// prefix
+		normalizedPath = normalizedPath.replace("file:///", "");
+
+		// Handle absolute paths
+		if (normalizedPath.startsWith("D:/Automation/S-One/")) {
+			normalizedPath = normalizedPath.substring("D:/Automation/S-One/".length());
+		}
+
+		// Fix duplicate target/reports issue
+		normalizedPath = normalizedPath.replace("target/reports/target/", "target/");
+
+		// Ensure we only have the direct screenshots path
+		if (normalizedPath.contains("screenshots/")) {
+			normalizedPath = "screenshots/" + normalizedPath.split("screenshots/")[1];
+		}
+
+		// Create proper HTML with correct paths for both src and click action
+		return String.format(
+				"<a href='%s' target='_blank'>" +
+						"<img src='%s' class='screenshot'>" +
+						"</a>",
+				normalizedPath,
+				normalizedPath
+		);
+	}
+
+	private static String formatDuration(long millis) {
+		return String.format("%02d:%02d:%02d.%03d",
+				TimeUnit.MILLISECONDS.toHours(millis),
+				TimeUnit.MILLISECONDS.toMinutes(millis) % 60,
+				TimeUnit.MILLISECONDS.toSeconds(millis) % 60,
+				millis % 1000);
 	}
 }
