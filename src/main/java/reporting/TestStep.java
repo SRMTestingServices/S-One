@@ -2,23 +2,22 @@ package reporting;
 
 public class TestStep {
 	private String stepNumber;
-	private String stepName;
 	private String stepDescription;
 	private Status status;
 	private String screenshot;
 	private String errorMessage;
 	private long executionTime; // milliseconds
+	private String stepType; // "Given", "When", "Then", or "Dynamic"
 
 	// Constructors
-	public TestStep(String stepNumber, String stepName, String stepDescription,
+	public TestStep(String stepNumber,  String stepDescription,
 					Status status, String screenshot) {
-		this(stepNumber, stepName, stepDescription, status, screenshot, null, 0);
+		this(stepNumber, stepDescription, status, screenshot, null, 0);
 	}
 
-	public TestStep(String stepNumber, String stepName, String stepDescription,
+	public TestStep(String stepNumber, String stepDescription,
 					Status status, String screenshot, String errorMessage, long executionTime) {
 		this.stepNumber = stepNumber;
-		this.stepName = stepName;
 		this.stepDescription = stepDescription;
 		this.status = status;
 		this.screenshot = screenshot;
@@ -28,7 +27,6 @@ public class TestStep {
 
 	// Getters
 	public String getStepNumber() { return stepNumber; }
-	public String getStepName() { return stepName; }
 	public String getStepDescription() { return stepDescription; }
 	public Status getStatus() { return status; }
 	public String getScreenshot() { return screenshot; }

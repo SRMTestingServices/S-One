@@ -48,7 +48,6 @@ public class Hooks {
 
         testSteps.add(new TestStep(
                 String.valueOf(testSteps.size() + 1),
-                stepName.split(" ")[0], // Gets Given/When/Then
                 stepName,
                 scenario.isFailed() ? Status.FAIL : Status.PASS,
                 screenshotPath,

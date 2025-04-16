@@ -46,79 +46,155 @@ public class HtmlReportGenerator {
 		int passedSteps = (int) testSteps.stream().filter(s -> s.getStatus() == Status.PASS).count();
 		double passRate = testSteps.isEmpty() ? 0 : (passedSteps * 100.0 / testSteps.size());
 
-		// HTML Header and CSS
-		html.append("<!DOCTYPE html>\n")
-				.append("<html>\n<head>\n")
-				.append("<meta charset='UTF-8'>\n")
-				.append("<title>Test Report - ").append(testName).append("</title>\n")
-				.append("<style>\n")
-				.append("  body { font-family: Arial, sans-serif; margin: 20px; }\n")
-				.append("  .header { background: #f5f5f5; padding: 15px; border-radius: 5px; margin-bottom: 20px; }\n")
-				.append("  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }\n")
-				.append("  th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }\n")
-				.append("  th { background-color: ").append(isTestPassed ? "#4CAF50" : "#f44336").append("; color: white; }\n")
-				.append("  .pass { color: #4CAF50; }\n")
-				.append("  .fail { color: #f44336; }\n")
-				.append("  .screenshot { max-width: 200px; cursor: pointer; transition: transform 0.3s; }\n")
-				.append("  .screenshot:hover { transform: scale(1.5); }\n")
-				.append("  .error { color: #d32f2f; font-size: 0.9em; margin-top: 5px; }\n")
-				.append("  .summary { font-weight: bold; margin-top: 20px; }\n")
-				.append("</style>\n</head>\n<body>\n");
+		html.append("""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset='UTF-8'>
+            <title>Test Report -""").append(testName).append("""
+            </title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                    color: #333;
+                }
+                .report-header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                    padding-bottom: 15px;
+                    border-bottom: 1px solid #eee;
+                }
+                .feature-name {
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                }
+                .metadata {
+                    display: flex;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                    gap: 15px;
+                    margin-bottom: 15px;
+                    font-size: 14px;
+                }
+                .metadata-item {
+                    display: flex;
+                    align-items: center;
+                }
+                .metadata-label {
+                    font-weight: bold;
+                    margin-right: 5px;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 20px;
+                }
+                th, td {
+                    padding: 10px;
+                    text-align: left;
+                    border: 0.5px solid #0e0e0e;
+                }
+                th {
+                    background-color: #f5f5f5;
+                    font-weight: bold;
+                }
+                .status-pass {
+                    color: #4CAF50;
+                    font-weight: bold;
+                }
+                .status-fail {
+                    color: #f44336;
+                    font-weight: bold;
+                }
+                .summary {
+                    text-align: center;
+                    font-size: 14px;
+                    margin-top: 20px;
+                }
+                .screenshot { max-width: 200px; cursor: pointer; transition: transform 0.3s; }
+            </style>
+        </head>
+        <body>
+            <div class="report-header">
+                <div class="feature-name">""").append(testName).append("""
+                </div>
+                <div class="metadata">
+                    <div class="metadata-item">
+                        <span class="metadata-label">Project:</span>
+                        <span>""").append(projectName).append("""
+                    </span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Browser:</span>
+                        <span>""").append(browser).append("""
+                    </span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Status:</span>
+                        <span class=\"""").append(isTestPassed ? "status-pass" : "status-fail").append("\">")
+				.append(isTestPassed ? "PASSED" : "FAILED").append("""
+                    </span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Duration:</span>
+                        <span>""").append(formatDuration(durationMs)).append("""
+                    </span>
+                    </div>
+                    <div class="metadata-item">
+                        <span class="metadata-label">Pass Rate:</span>
+                        <span>""").append(String.format("%.1f%%", passRate)).append("""
+                    </span>
+                    </div>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Step #</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Screenshot</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody>
+        """);
 
-		// Report Header
-		html.append("<div class='header'>\n")
-				.append("<h2>").append(testName).append("</h2>\n")
-				.append("<p><strong>Project:</strong> ").append(projectName).append("</p>\n")
-				.append("<p><strong>Browser:</strong> ").append(browser).append("</p>\n")
-				.append("<p><strong>Status:</strong> <span class='")
-				.append(isTestPassed ? "pass'>PASSED" : "fail'>FAILED").append("</span></p>\n")
-				.append("<p><strong>Duration:</strong> ").append(formatDuration(durationMs)).append("</p>\n")
-				.append("<p><strong>Pass Rate:</strong> ").append(String.format("%.1f%%", passRate)).append("</p>\n")
-				.append("</div>\n");
-
-		// Test Steps Table
-		html.append("<table>\n")
-				.append("<tr>\n")
-				.append("  <th>Step #</th>\n")
-				.append("  <th>Description</th>\n")
-				.append("  <th>Status</th>\n")
-				.append("  <th>Screenshot</th>\n")
-				.append("  <th>Duration</th>\n")
-				.append("</tr>\n");
-
-		// Add each test step
+		// Add test steps
 		for (TestStep step : testSteps) {
-			html.append("<tr>\n")
-					.append("  <td>").append(step.getStepNumber()).append("</td>\n")
-					.append("  <td>").append(step.getStepDescription()).append("</td>\n")
-					.append("  <td class='").append(step.getStatus().name().toLowerCase()).append("'>")
-					.append(step.getStatus()).append("</td>\n")
-					.append("  <td>").append(getScreenshotHtml(step.getScreenshot())).append("</td>\n")
-					.append("  <td>").append(step.getExecutionTime()).append(" ms</td>\n")
-					.append("</tr>\n");
-
-			// Add error message if failed
-			if (step.getStatus() == Status.FAIL && step.getErrorMessage() != null) {
-				html.append("<tr>\n")
-						.append("  <td colspan='6' class='error'>")
-						.append(step.getErrorMessage()).append("</td>\n")
-						.append("</tr>\n");
-			}
+			html.append("""
+                    <tr>
+                        <td>""").append(step.getStepNumber()).append("""
+                        </td>
+                        <td>""").append(step.getStepDescription()).append("""
+                        </td>
+                        <td class=\"""").append(step.getStatus() == Status.PASS ? "status-pass" : "status-fail").append("\">")
+					.append(step.getStatus()).append("""
+                        </td>
+                        <td>""").append(getScreenshotHtml(step.getScreenshot())).append("""
+                        </td>
+                        <td>""").append(step.getExecutionTime()).append(""" 
+                    ms</td>
+                    </tr>
+            """);
 		}
 
-		// Footer
-		html.append("</table>\n")
-				.append("<div class='summary'>\n")
-				.append("<p>Total Steps: ").append(testSteps.size())
-				.append(" | Passed: ").append(passedSteps)
-				.append(" | Failed: ").append(testSteps.size() - passedSteps).append("</p>\n")
-				.append("</div>\n")
-				.append("<script>\n")
-				.append("document.querySelectorAll('.screenshot').forEach(img => {\n")
-				.append("  img.addEventListener('click', () => window.open(img.src, '_blank'));\n")
-				.append("});\n")
-				.append("</script>\n")
-				.append("</body>\n</html>");
+		html.append("""
+                </tbody>
+            </table>
+            
+            <div class="summary">
+                <strong>Total Steps: """).append(testSteps.size())
+				.append(" | </strong><strong style=\"color: #4CAF50\">Passed: ").append(passedSteps)
+				.append("</strong><strong> | </strong><strong style=\"color: #f44336\">Failed: ").append(testSteps.size() - passedSteps)
+				.append("""
+            </strong>
+            </div>
+        </body>
+        </html>
+        """);
 
 		return html.toString();
 	}
