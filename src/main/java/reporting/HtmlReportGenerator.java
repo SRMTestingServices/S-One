@@ -1,5 +1,7 @@
 package reporting;
 
+import utils.StepNamePlugin;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -168,7 +170,16 @@ public class HtmlReportGenerator {
                     <tr>
                         <td>""").append(step.getStepNumber()).append("""
                         </td>
-                        <td>""").append(step.getStepDescription()).append("""
+                        <td>""");
+
+			String stepDescription = step.getStepDescription();
+			if (step.getStatus() == Status.FAIL && StepNamePlugin.getCurrentStepError() != null) {
+				Throwable stepError = StepNamePlugin.getCurrentStepError();
+				stepDescription += "<br><span style='color:red;'>Error: " + stepError.getMessage() + "</span>";
+			}
+
+			html.append(stepDescription).append("""
+
                         </td>
                         <td class=\"""").append(step.getStatus() == Status.PASS ? "status-pass" : "status-fail").append("\">")
 					.append(step.getStatus()).append("""

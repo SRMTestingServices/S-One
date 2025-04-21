@@ -2,13 +2,11 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import utils.SeleniumUtils;
-import utils.WaitUtils;
+import utils.WebDriverUtils;
 
 public class LoginPage {
     private WebDriver driver;
-    private SeleniumUtils seleniumUtils;
-    private WaitUtils waitUtils;
+    private WebDriverUtils utils;
 
 
     private By usernameField = By.id("username");
@@ -18,24 +16,22 @@ public class LoginPage {
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
-        seleniumUtils = new SeleniumUtils(driver);
-        waitUtils = new WaitUtils(driver);
+        this.utils = new WebDriverUtils(driver);
     }
 
     public void enterUsername(String username) {
-        seleniumUtils.typeText(driver.findElement(usernameField), username);
+        utils.enterText(usernameField, username);
     }
 
     public void enterPassword(String password) {
-        seleniumUtils.typeText(driver.findElement(passwordField), password);
+        utils.enterText(passwordField, password);
     }
 
     public void clickLoginButton() {
-        waitUtils.waitForElementToBeClickable(driver.findElement(loginButton), 10);
-        seleniumUtils.clickElement(driver.findElement(loginButton));
+        utils.click(loginButton);
     }
 
     public String getErrorMessage() {
-        return seleniumUtils.getElementText(driver.findElement(errorMessage));
+        return utils.getText(errorMessage);
     }
 }

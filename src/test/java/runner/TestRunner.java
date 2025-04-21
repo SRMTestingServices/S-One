@@ -9,7 +9,7 @@ import org.testng.annotations.Listeners;
         features = "src/test/resources/features",  // Path to feature files
         glue = {"steps", "hooks"},
         plugin = {"pretty", "html:reports/cucumber.html","utils.StepNamePlugin"},
-        tags = "@TSCID098767",
+        tags = "@TSCID12345",
         monochrome = true
 )
 @Listeners(ChainTestListener.class)

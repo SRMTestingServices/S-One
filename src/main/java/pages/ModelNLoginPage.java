@@ -2,13 +2,11 @@ package pages;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import utils.SeleniumUtils;
-import utils.WaitUtils;
+import utils.WebDriverUtils;
 
 public class ModelNLoginPage {
     private WebDriver driver;
-    private SeleniumUtils seleniumUtils;
-    private WaitUtils waitUtils;
+    private WebDriverUtils utils;
 
 
     private final By userName = By.xpath("//input[@name='~123~-login-tbUsername0']");
@@ -17,20 +15,18 @@ public class ModelNLoginPage {
 
     public ModelNLoginPage(WebDriver driver) {
         this.driver = driver;
-        seleniumUtils = new SeleniumUtils(driver);
-        waitUtils = new WaitUtils(driver);
+        this.utils = new WebDriverUtils(driver);
     }
 
     public void clickLoginButton() {
-        waitUtils.waitForElementToBeClickable(driver.findElement(loginButton), 10);
-        seleniumUtils.clickElement(driver.findElement(loginButton));
+        utils.click(loginButton);
     }
     public void enterUserName(String searchText) {
-        seleniumUtils.typeText(driver.findElement(userName), searchText);
+        utils.enterText(userName, searchText);
     }
 
     public void enterPassword(String password) {
-        seleniumUtils.typeText(driver.findElement(passwordField), password);
+        utils.enterText(passwordField, password);
     }
 
 }

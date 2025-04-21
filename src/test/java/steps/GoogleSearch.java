@@ -37,10 +37,11 @@ public class GoogleSearch {
     String driverClass = "com.mysql.cj.jdbc.Driver"; 
     String query = "";
     List<TestStep> testSteps = new ArrayList<>();
-
+    private GooglePage gPage;
     
     public GoogleSearch() {
         this.driver = DriverManager.getDriver();
+        gPage=new GooglePage(driver);
     }
 
     @BeforeClass
@@ -67,7 +68,6 @@ public class GoogleSearch {
     public void thePageTitleShouldBe(String expectedTitle) {
         String actualTitle = driver.getTitle();
         Assert.assertEquals(actualTitle, expectedTitle, "Page title mismatch!");
-        GooglePage gPage=new GooglePage(driver);
         gPage.enterSearchBox("Deepan Fernandez");
         log.info("Page title is validated");
         //testSteps.add(new TestStep("3", "Step 3", "Entered search text", Status.PASS, ScreenshotUtil.captureScreenshot(driver)));

@@ -28,6 +28,7 @@ public class DriverManager {
 				options.addArguments("--disable-gpu");
 				options.addArguments("--no-sandbox");
 				options.addArguments("--remote-allow-origins=*");
+				options.addArguments("--start-maximized");
 				webDriverThread.set(new ChromeDriver(options));
 			}
 			return webDriverThread.get();
