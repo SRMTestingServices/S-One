@@ -84,7 +84,7 @@ public class APISampleTest {
 
 	public void testRequestAndValidateJSONSchema() {
 		Response response = restAssuredUtil.get("");
-		Assert.assertTrue(restAssuredUtil.validateJSONSchema(response, "schema.json"), "Schema validation failed");
+		restAssuredUtil.validateJSONSchemaOrFail(response, "schema.json");
 		System.out.println("JSON Schema Validation Passed");
 	}
 	
