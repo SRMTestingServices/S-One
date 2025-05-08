@@ -5,8 +5,8 @@ import org.openqa.selenium.WebDriver;
 import utils.WebDriverUtils;
 
 public class ModelNDashboardPage {
-    private WebDriver driver;
-    private WebDriverUtils utils;
+    private final WebDriver driver;
+    private final WebDriverUtils utils;
 
 
     private final By mainMenu = By.xpath("//a[@name='~123~-mainMenu-rightMenu-opener0']");
@@ -15,6 +15,9 @@ public class ModelNDashboardPage {
     private final By accountsMenu = By.xpath("//a[@name='~123~-mainMenu-rightMenu-viewMenu-customersMenu-Accounts0']");
     private final By accountStatus = By.xpath("//select[contains(@name,'searcher-buildContainer-ent-mco-account-status0')]");
     private final By customerType = By.xpath("//select[contains(@name,'searcher-buildContainer-ent-mco-account-orgType0')]");
+    private final By domainType = By.xpath("//select[contains(@name,'searcher-buildContainer-ent-mco-account-domain0')]");
+    private final By contractsType = By.xpath("//select[contains(@name,'searcher-buildContainer-ent-mco-account-allowContracts0')]");
+    private final By saveAsButton = By.xpath("//a[@name='~123~-documentFrame-customers-searcher-saveAs-opener0']");
 
     public ModelNDashboardPage(WebDriver driver) {
         this.driver = driver;
@@ -47,4 +50,19 @@ public class ModelNDashboardPage {
         utils.waitForElementToBeVisible(customerType);
         utils.selectDropdownByValue(customerType,value);
     }
+    public void selectDomainValue(String value)
+    {
+        utils.waitForElementToBeVisible(domainType);
+        utils.selectDropdownByValue(domainType,value);
+    }
+    public void selectContractsValue(String value)
+    {
+        utils.waitForElementToBeVisible(contractsType);
+        utils.selectDropdownByValue(contractsType,value);
+    }
+    public ModelNDashboardPage clickSaveAs() {
+        utils.clickUsingJS(driver.findElement(saveAsButton));
+        return this;
+    }
+
 }

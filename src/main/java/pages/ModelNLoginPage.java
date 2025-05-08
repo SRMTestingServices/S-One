@@ -5,8 +5,8 @@ import org.openqa.selenium.WebDriver;
 import utils.WebDriverUtils;
 
 public class ModelNLoginPage {
-    private WebDriver driver;
-    private WebDriverUtils utils;
+    private final WebDriver driver;
+    private final WebDriverUtils utils;
 
 
     private final By userName = By.xpath("//input[@name='~123~-login-tbUsername0']");
@@ -28,5 +28,10 @@ public class ModelNLoginPage {
     public void enterPassword(String password) {
         utils.enterText(passwordField, password);
     }
-
+public void completePage(String password,String searchText)
+{
+    utils.enterText(userName, searchText);
+    utils.enterText(passwordField, password);
+    utils.click(loginButton);
+}
 }

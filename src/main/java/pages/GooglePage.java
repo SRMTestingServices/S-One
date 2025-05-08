@@ -5,14 +5,14 @@ import org.openqa.selenium.WebDriver;
 import utils.WebDriverUtils;
 
 public class GooglePage {
-    private WebDriver driver;
-    private WebDriverUtils utils;
+    private final WebDriver driver;
+    private final WebDriverUtils utils;
 
 
-    private By searchBox = By.id("APjFqb");
-    private By passwordField = By.id("password");
-    private By loginButton = By.id("loginBtn");
-    private By errorMessage = By.id("errorMsg");
+    private final By searchBox = By.id("APjFqb");
+    private final By passwordField = By.id("password");
+    private final By loginButton = By.id("loginBtn");
+    private final By errorMessage = By.id("errorMsg");
 
     public GooglePage(WebDriver driver) {
         this.driver = driver;

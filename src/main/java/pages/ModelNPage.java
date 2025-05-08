@@ -6,7 +6,7 @@ import utils.WebDriverUtils;
 
 public class ModelNPage {
     private final WebDriver driver;
-    private WebDriverUtils utils;
+    private final WebDriverUtils utils;
 
 
     private final By launchButton = By.xpath("//button[@class='btn launchButton']");

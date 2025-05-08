@@ -48,12 +48,11 @@ logs/
 *.tmp
 
 # Ignore OS-specific files
-.DS_Store
 Thumbs.db
 /reports
 /.idea
 reports/cucumber.html
 .idea/workspace.xml
 *.html
-*.html
-.idea/workspace.xml
+reports/cucumber.html
+/reports

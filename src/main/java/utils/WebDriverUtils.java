@@ -67,7 +67,11 @@ public class WebDriverUtils {
 	}
 
 	public void enterText(By element, String text) {
-		retryAction(() -> wait.until(ExpectedConditions.visibilityOfElementLocated(element)).sendKeys(text));
+		retryAction(() -> {
+			WebElement el = wait.until(ExpectedConditions.visibilityOfElementLocated(element));
+			el.clear();
+			el.sendKeys(text);
+		});
 	}
 
 	public void clearText(WebElement element) {

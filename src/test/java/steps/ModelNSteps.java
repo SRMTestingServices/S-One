@@ -5,6 +5,7 @@ import base.DriverManager;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.JavascriptExecutor;
@@ -71,5 +72,8 @@ public class ModelNSteps {
         utils.switchToFrameByID("documentIFrame");
         modelNDashboardPage.selectAccountsMenu("Active");
         modelNDashboardPage.selectCustomerValue("GPO");
+        modelNDashboardPage.selectDomainValue("Commercial");
+        modelNDashboardPage.selectContractsValue("Yes");
+        modelNDashboardPage.clickSaveAs();
     }
 }
