@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import org.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import utils.JsonUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +19,8 @@ public class APISampleTest {
 
 	@Given("I send a GET request to {string} on base URI {string}")
 	public void i_send_a_get_request_to_on_base_uri(String endpoint, String baseUri) {
+		String username = JsonUtils.getString("users.json", "users[0].username");
+		System.out.println(username);
 		apiUtil = new RestAssuredUtil(baseUri)
 				.setContentType(ContentType.JSON)
 				.enableLogging(true); // Optional: Enable detailed logging
