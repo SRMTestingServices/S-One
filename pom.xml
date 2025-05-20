@@ -5,12 +5,14 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.example</groupId>
-	<artifactId>AutoZen</artifactId>
+	<artifactId>S-One</artifactId>
 	<version>1.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
+		<maven.surefire.version>3.1.2</maven.surefire.version>
+		<parallel.tests>4</parallel.tests> <!-- Number of parallel threads -->
 	</properties>
 	<dependencies>
 
@@ -128,8 +130,24 @@
 			<artifactId>healenium-web</artifactId>
 			<version>3.5.5</version>
 		</dependency>
-
 	</dependencies>
-
+	<!-- Add/Update surefire plugin -->
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${maven.surefire.version}</version>
+				<configuration>
+					<parallel>methods</parallel>
+					<useUnlimitedThreads>false</useUnlimitedThreads>
+					<threadCount>${parallel.tests}</threadCount>
+					<includes>
+						<include>**/*Runner*.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

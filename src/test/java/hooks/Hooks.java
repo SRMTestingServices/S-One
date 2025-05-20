@@ -7,6 +7,7 @@ import reporting.HtmlReportGenerator;
 import reporting.ReportManager;
 import reporting.Status;
 import reporting.TestStep;
+import utils.ConfigReader;
 import utils.ScreenshotUtil;
 import utils.StepNamePlugin;
 
@@ -23,7 +24,7 @@ public class Hooks {
         return map;
     });
 
-    private static final String PROJECT_NAME = "AutoZen";
+    private static final String PROJECT_NAME = ConfigReader.getProperty("project.name");
 
     @Before(order = 1)
     public void setup(Scenario scenario) {

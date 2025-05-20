@@ -1,6 +1,7 @@
 package reporting;
 
 import org.openqa.selenium.WebDriver;
+import utils.ConfigReader;
 import utils.ScreenshotUtil;
 
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class ReportManager {
     private static final AtomicLong totalExecutionStartTime = new AtomicLong(System.currentTimeMillis());
 
     // Report configuration
-    private static final String projectName = "AutoZen";
+    private static final String projectName = ConfigReader.getProperty("project.name");
     private static String currentReportDirectory;
 
     public static void initializeReportDirectory() {
@@ -134,7 +135,7 @@ public class ReportManager {
             </head>
             <body>
                 <h1>Master Test Report -\s""").append(projectName).append("""
-                "</h1>
+                </h1>
                 <div class="summary">
                 <p>Generated on: <span class="timestamp">""")
                .append(dateFormat.format(new Date())).append("</span></p>")

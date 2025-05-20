@@ -10,6 +10,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.Browser;
+import utils.ConfigReader;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,19 +18,12 @@ import java.net.URL;
 public class DriverManager {
 	private static final ThreadLocal<WebDriver> webDriverThread = new ThreadLocal<>();
 	private static final ThreadLocal<AppiumDriver> mobileDriverThread = new ThreadLocal<>();
-	private static final String PLATFORM = System.getProperty("platform", "web"); // Set via Maven CLI:
-																					// -Dplatform=web/android/ios
+	private static final String PLATFORM = ConfigReader.getProperty("platform").toLowerCase();
 
 	public static WebDriver getDriver() {
 		if (PLATFORM.equalsIgnoreCase("web")) {
 			if (webDriverThread.get() == null) {
-				WebDriverManager.chromedriver().setup();
-				ChromeOptions options = new ChromeOptions();
-				options.addArguments("--disable-gpu");
-				options.addArguments("--no-sandbox");
-				options.addArguments("--remote-allow-origins=*");
-				options.addArguments("--start-maximized");
-				webDriverThread.set(new ChromeDriver(options));
+				initializeWebDriver();
 			}
 			return webDriverThread.get();
 		} else {
@@ -40,24 +34,46 @@ public class DriverManager {
 		}
 	}
 
+	private static void initializeWebDriver() {
+		WebDriverManager.chromedriver().setup();
+		ChromeOptions options = new ChromeOptions();
+
+		if (ConfigReader.getBooleanProperty("headless")) {
+			options.addArguments("--headless=new");
+		}
+		if (ConfigReader.getBooleanProperty("remote.allow.origins")) {
+			options.addArguments("--remote-allow-origins=*");
+		}
+		if (ConfigReader.getBooleanProperty("start.maximized")) {
+			options.addArguments("--start-maximized");
+		}
+
+		webDriverThread.set(new ChromeDriver(options));
+	}
 	private static AppiumDriver initializeMobileDriver() {
-		if (PLATFORM.equalsIgnoreCase("android")) {
-			UiAutomator2Options options = new UiAutomator2Options().setPlatformName("Android")
-					.setDeviceName("emulator-5554").setApp("path/to/your/app.apk");
+		String appiumUrl = ConfigReader.getProperty("appium.server.url");
+
+		if (PLATFORM.equals("android")) {
+			UiAutomator2Options options = new UiAutomator2Options()
+					.setPlatformName(ConfigReader.getProperty("android.platform.name"))
+					.setDeviceName(ConfigReader.getProperty("android.device.name"))
+					.setApp(ConfigReader.getProperty("android.app.path"));
 
 			try {
-				return new AndroidDriver(new URL("http://localhost:4723/wd/hub"), options);
+				return new AndroidDriver(new URL(appiumUrl), options);
 			} catch (MalformedURLException e) {
-				throw new RuntimeException("Invalid Appium Server URL");
+				throw new RuntimeException("Invalid Appium Server URL: " + appiumUrl);
 			}
-		} else if (PLATFORM.equalsIgnoreCase("ios")) {
-			XCUITestOptions options = new XCUITestOptions().setPlatformName("iOS").setDeviceName("iPhone 14")
-					.setApp("path/to/your/app.app");
+		} else if (PLATFORM.equals("ios")) {
+			XCUITestOptions options = new XCUITestOptions()
+					.setPlatformName(ConfigReader.getProperty("ios.platform.name"))
+					.setDeviceName(ConfigReader.getProperty("ios.device.name"))
+					.setApp(ConfigReader.getProperty("ios.app.path"));
 
 			try {
-				return new IOSDriver(new URL("http://localhost:4723/wd/hub"), options);
+				return new IOSDriver(new URL(appiumUrl), options);
 			} catch (MalformedURLException e) {
-				throw new RuntimeException("Invalid Appium Server URL");
+				throw new RuntimeException("Invalid Appium Server URL: " + appiumUrl);
 			}
 		}
 		throw new RuntimeException("Unsupported platform: " + PLATFORM);
@@ -75,6 +91,6 @@ public class DriverManager {
 	}
 	public static String getBrowserName()
 	{
-		return "CHROME";
+		return ConfigReader.getProperty("browser").toUpperCase();
 	}
 }
