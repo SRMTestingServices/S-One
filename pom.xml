@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>io.github.bonigarcia</groupId>
 			<artifactId>webdrivermanager</artifactId>
-			<version>5.8.0</version>
+			<version>6.0.0</version>
 		</dependency>
 
 		<!-- Logging (For Better Debugging) -->
@@ -64,6 +64,11 @@
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
 			<version>2.24.3</version>
+		</dependency>
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-common</artifactId>
+			<version>4.1.118.Final</version>
 		</dependency>
 
 		<!-- HTML Reporting (Extent Reports for Test Execution) -->
@@ -78,11 +83,12 @@
 			<version>1.14.0</version>
 		</dependency>
 
+
 		<!-- Cucumber Report Plugins (HTML, JSON, Extent Reports) -->
 		<dependency>
 			<groupId>net.masterthought</groupId>
 			<artifactId>cucumber-reporting</artifactId>
-			<version>5.7.6</version>
+			<version>5.8.1</version>
 		</dependency>
 
 		<!-- RestAssured for API Automation -->
@@ -94,7 +100,7 @@
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20210307</version>
+			<version>20231013</version>
 		</dependency>
 		<dependency>
 			<groupId>io.rest-assured</groupId>
@@ -115,7 +121,7 @@
 		<dependency>
 			<groupId>com.aventstack</groupId>
 			<artifactId>chaintest-testng</artifactId>
-			<version>1.0.11</version>
+			<version>1.0.12</version>
 		</dependency>
 		<dependency>
 			<groupId>com.epam.healenium</groupId>

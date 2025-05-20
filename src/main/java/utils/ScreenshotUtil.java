@@ -2,39 +2,59 @@ package utils;
 
 import org.openqa.selenium.*;
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.chrome.ChromeDriver;
+import reporting.ReportManager;
+
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 
 public class ScreenshotUtil {
-    private static final String SCREENSHOT_DIR = "target/reports/screenshots/";
+    public static class ScreenshotResult {
+        public final String fullPath;
+        public final String filename;
 
+        public ScreenshotResult(String fullPath, String filename) {
+            this.fullPath = fullPath;
+            this.filename = filename;
+        }
+    }
     public static String captureScreenshot(WebDriver driver, String prefix) {
+        if (driver == null) return null;
+
         try {
-            // Convert to absolute path and normalize
-            String absolutePath = new File(SCREENSHOT_DIR).getAbsolutePath();
-            Path screenshotDir = Paths.get(absolutePath);
+            long timestamp = System.currentTimeMillis();
+            String filename = prefix + "_" + timestamp + ".png";
+            String fullPath = ReportManager.getScreenshotDirectory() + filename;
 
-            // Create directory if needed
-            Files.createDirectories(screenshotDir);
+            Files.createDirectories(Paths.get(ReportManager.getScreenshotDirectory()));
+            File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(srcFile, new File(fullPath));
 
-            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmssSSS").format(new Date());
-            String threadId = String.valueOf(Thread.currentThread().getId());
-            String filename = String.format("%s_%s_%s.png",
-                    prefix != null ? prefix : "screenshot",
-                    timestamp,
-                    Thread.currentThread().getId());
-
-            File srcFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-            File destFile = screenshotDir.resolve(filename).toFile();
-            FileUtils.copyFile(srcFile, destFile);
-
-            return SCREENSHOT_DIR + filename;
+            // Return consistent file URL format
+            return "file:///" + fullPath.replace("\\", "/");
         } catch (Exception e) {
-            System.err.println("Failed to capture screenshot: " + e.getMessage());
-            return "screenshot_failed.png";
+            System.err.println("Error capturing screenshot: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static String captureFullPageScreenshot(WebDriver driver, String prefix) {
+        try {
+            // Only works with ChromeDriver
+            if (driver instanceof ChromeDriver) {
+                File srcFile = ((ChromeDriver) driver).getScreenshotAs(OutputType.FILE);
+                String screenshotPath = ReportManager.getScreenshotPath(prefix != null ? prefix : "fullpage");
+                FileUtils.copyFile(srcFile, new File(screenshotPath));
+                return screenshotPath;
+            }
+            return captureScreenshot(driver, prefix); // fallback to regular screenshot
+        } catch (Exception e) {
+            System.err.println("Failed to capture full page screenshot: " + e.getMessage());
+            return captureScreenshot(driver, prefix); // fallback to regular screenshot
         }
     }
 }

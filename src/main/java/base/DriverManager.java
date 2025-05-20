@@ -73,4 +73,8 @@ public class DriverManager {
 			mobileDriverThread.remove();
 		}
 	}
+	public static String getBrowserName()
+	{
+		return "CHROME";
+	}
 }

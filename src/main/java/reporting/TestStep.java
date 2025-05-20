@@ -1,35 +1,52 @@
 package reporting;
 
-public class TestStep {
-	private String stepNumber;
-	private String stepDescription;
-	private Status status;
-	private String screenshot;
-	private String errorMessage;
-	private long executionTime; // milliseconds
-	private String stepType; // "Given", "When", "Then", or "Dynamic"
+import lombok.Getter;
 
-	// Constructors
-	public TestStep(String stepNumber,  String stepDescription,
-					Status status, String screenshot) {
-		this(stepNumber, stepDescription, status, screenshot, null, 0);
-	}
+public class TestStep {
+    // Getters
+    @Getter
+    private String stepNumber;
+	@Getter
+    private String stepDescription;
+	@Getter
+    private Status status;
+	@Getter
+    private String screenshot;
+	@Getter
+    private String errorMessage;
+	@Getter
+    private long executionTime; // milliseconds
+	@Getter
+	private String screenshotFilename;
 
 	public TestStep(String stepNumber, String stepDescription,
-					Status status, String screenshot, String errorMessage, long executionTime) {
+					Status status, String screenshotFullPath, String errorMessage,
+					long executionTime) {
 		this.stepNumber = stepNumber;
 		this.stepDescription = stepDescription;
 		this.status = status;
-		this.screenshot = screenshot;
 		this.errorMessage = errorMessage;
 		this.executionTime = executionTime;
+
+		// Process the screenshot path
+		if (screenshotFullPath != null && !screenshotFullPath.isEmpty()) {
+			this.screenshotFilename = extractFilename(screenshotFullPath);
+			this.screenshot = convertToRelativePath(screenshotFullPath);
+		}
 	}
 
-	// Getters
-	public String getStepNumber() { return stepNumber; }
-	public String getStepDescription() { return stepDescription; }
-	public Status getStatus() { return status; }
-	public String getScreenshot() { return screenshot; }
-	public String getErrorMessage() { return errorMessage; }
-	public long getExecutionTime() { return executionTime; }
+	private String extractFilename(String path) {
+		if (path == null) return null;
+		// Handle both forward and backward slashes
+		return path.replace("\\", "/").substring(path.lastIndexOf('/') + 1);
+	}
+
+	private String convertToRelativePath(String fullPath) {
+		// Convert to relative path from test-reports folder
+		return fullPath.replace("\\", "/")
+				.replace("file:///", "")
+				.replace(ReportManager.getCurrentReportDirectory(), "")
+				.replace("test-reports/", "");
+	}
+
 }
