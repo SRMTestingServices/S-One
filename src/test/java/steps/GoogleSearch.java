@@ -38,7 +38,7 @@ public class GoogleSearch {
     String query = "";
     List<TestStep> testSteps = new ArrayList<>();
     private GooglePage gPage;
-    
+
     public GoogleSearch() {
         this.driver = DriverManager.getDriver();
         gPage=new GooglePage(driver);
@@ -70,14 +70,7 @@ public class GoogleSearch {
         Assert.assertEquals(actualTitle, expectedTitle, "Page title mismatch!");
         gPage.enterSearchBox("Deepan Fernandez");
         log.info("Page title is validated");
-        //testSteps.add(new TestStep("3", "Step 3", "Entered search text", Status.PASS, ScreenshotUtil.captureScreenshot(driver)));
-        //HtmlReportGenerator.generateHtmlReport("Chrome", "Login Test", "Project X", testSteps,false);//if we want show image directly then pass end argument as false
-    }
-    
-    @AfterTest
-    public void generateReport() {
-//    	HtmlReportGenerator.generateHtmlReport("Chrome", "Login Test", "Project X", testSteps,true);//if we want image as Link to click and see then enable it as true 
-    	//HtmlReportGenerator.generateHtmlReport("Chrome", "Login Test", "Project - Google", testSteps,false);//if we want show image directly then pass end argument as false
+
     }
     
 }

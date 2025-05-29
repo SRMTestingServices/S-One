@@ -1,30 +1,13 @@
 package steps;
 
-import api.RestAssuredUtil;
 import base.DriverManager;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.Assert;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
 import pages.*;
-import reporting.HtmlReportGenerator;
-import reporting.Status;
-import reporting.TestStep;
 import utils.*;
-
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 public class ModelNSteps {
     private final WebDriver driver;

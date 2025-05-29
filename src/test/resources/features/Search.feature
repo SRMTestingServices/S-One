@@ -1,7 +1,12 @@
 Feature: Google Search
 
-  @TSCID098767
+  @UiTest
   Scenario: Verify Google Title
+    Given I open the browser and navigate to "https://www.google.com"
+    Then the page title should be "Google"
+
+  @UiTest
+  Scenario: Verify Google Search
     Given I open the browser and navigate to "https://www.google.com"
     Then the page title should be "Google"
 

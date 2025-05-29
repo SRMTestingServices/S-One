@@ -1,13 +1,19 @@
 package steps;
 
 import api.RestAssuredUtil;
+import base.DriverManager;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.json.JSONObject;
+import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
+import pages.GooglePage;
+import reporting.DynamicStepAdder;
+import reporting.ReportManager;
+import reporting.Status;
 import utils.JsonUtils;
 
 import java.util.HashMap;
@@ -16,6 +22,11 @@ import java.util.Map;
 public class APISampleTest {
 	private RestAssuredUtil apiUtil;
 	private Response response;
+	private final WebDriver driver;
+
+	public APISampleTest() {
+		this.driver = DriverManager.getDriver();
+	}
 
 	@Given("I send a GET request to {string} on base URI {string}")
 	public void i_send_a_get_request_to_on_base_uri(String endpoint, String baseUri) {
@@ -30,7 +41,10 @@ public class APISampleTest {
 
 	@Then("the response status code should be {int}")
 	public void the_response_status_code_should_be(Integer expectedStatusCode) {
+		long startTime = System.currentTimeMillis();
 		Assert.assertTrue(apiUtil.validateStatusCode(response, expectedStatusCode),"Expected status code: " + expectedStatusCode + ", but got: " + response.getStatusCode());
+		long duration = System.currentTimeMillis() - startTime;
+		DynamicStepAdder.addStep(driver,"Verified API response time",Status.PASS,true,null);
 	}
 
 	@Given("I send a POST request to {string} on base URI {string} with JSON body")

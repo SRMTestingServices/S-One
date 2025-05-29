@@ -9,7 +9,7 @@ import org.testng.annotations.Listeners;
 import utils.ConfigReader;
 
 @CucumberOptions(
-        features = "src/test/resources/features",  // Path to feature files
+        features = "classpath:features",  // Path to feature files
         glue = {"steps", "hooks"},
         plugin = {"pretty",
                 "html:reports/cucumber.html",

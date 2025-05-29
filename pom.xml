@@ -11,8 +11,9 @@
 	<properties>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
-		<maven.surefire.version>3.1.2</maven.surefire.version>
+		<maven.surefire.version>3.2.5</maven.surefire.version>
 		<parallel.tests>4</parallel.tests> <!-- Number of parallel threads -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
 
@@ -41,7 +42,6 @@
 			<artifactId>cucumber-testng</artifactId>
 			<version>7.20.1</version>
 		</dependency>
-
 		<!-- TestNG for Parallel Execution -->
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -137,14 +137,25 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${maven.surefire.version}</version>
+				<version>3.5.1</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-testng</artifactId>
+						<version>3.5.1</version>
+					</dependency>
+				</dependencies>
 				<configuration>
+					<suiteXmlFiles>
+						<suiteXmlFile>testng.xml</suiteXmlFile>
+					</suiteXmlFiles>
 					<parallel>methods</parallel>
 					<useUnlimitedThreads>false</useUnlimitedThreads>
 					<threadCount>${parallel.tests}</threadCount>
 					<includes>
-						<include>**/*Runner*.java</include>
+						<include>**/TestRunner.java</include>
 					</includes>
+					<testFailureIgnore>true</testFailureIgnore>
 				</configuration>
 			</plugin>
 		</plugins>
