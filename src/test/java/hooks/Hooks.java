@@ -10,19 +10,12 @@ import reporting.TestStep;
 import utils.ConfigReader;
 import utils.ScreenshotUtil;
 import utils.StepNamePlugin;
-
-import java.util.ArrayList;
+import utils.TestContextUtil;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+
 
 public class Hooks {
-    private static final ThreadLocal<Map<String, Object>> testContext = ThreadLocal.withInitial(() -> {
-        Map<String, Object> map = new ConcurrentHashMap<>();
-        map.put("testSteps", new ArrayList<TestStep>());
-        map.put("stepCounter", 1);
-        return map;
-    });
 
     private static final String PROJECT_NAME = ConfigReader.getProperty("project.name");
 
@@ -34,22 +27,22 @@ public class Hooks {
         }
 
         WebDriver driver = DriverManager.getDriver();
-        testContext.get().put("driver", driver);
-        testContext.get().put("scenario", scenario);
-        testContext.get().put("startTime", System.currentTimeMillis());
+        TestContextUtil.getTestContext().put("driver", driver);
+        TestContextUtil.getTestContext().put("scenario", scenario);
+        TestContextUtil.getTestContext().put("startTime", System.currentTimeMillis());
     }
 
     @BeforeStep
     public void beforeStep() {
-        testContext.get().put("stepStartTime", System.currentTimeMillis());
+        TestContextUtil.getTestContext().put("stepStartTime", System.currentTimeMillis());
     }
 
     @AfterStep
     public void afterStep(Scenario scenario) {
-        WebDriver driver = (WebDriver) testContext.get().get("driver");
-        List<TestStep> testSteps = (List<TestStep>) testContext.get().get("testSteps");
-        int stepNumber = (int) testContext.get().get("stepCounter");
-        long stepDuration = System.currentTimeMillis() - (long) testContext.get().get("stepStartTime");
+        WebDriver driver = (WebDriver) TestContextUtil.getTestContext().get("driver");
+        List<TestStep> testSteps = TestContextUtil.getCurrentTestSteps();
+        int stepNumber = TestContextUtil.getStepCounter().get();
+        long stepDuration = System.currentTimeMillis() - (long) TestContextUtil.getTestContext().get("startTime");
 
         String stepName = StepNamePlugin.getCurrentStepName();
         if (stepName == null) {
@@ -72,14 +65,14 @@ public class Hooks {
                 stepDuration
         ));
 
-        testContext.get().put("stepCounter", stepNumber + 1);
+        TestContextUtil.getStepCounter().incrementAndGet();
     }
 
     @After
     public void tearDown(Scenario scenario) {
-        WebDriver driver = (WebDriver) testContext.get().get("driver");
-        List<TestStep> testSteps = (List<TestStep>) testContext.get().get("testSteps");
-        long scenarioDuration = System.currentTimeMillis() - (long) testContext.get().get("startTime");
+        WebDriver driver = (WebDriver) TestContextUtil.getTestContext().get("driver");
+        List<TestStep> testSteps = TestContextUtil.getCurrentTestSteps();
+        long scenarioDuration = System.currentTimeMillis() - (long) TestContextUtil.getTestContext().get("startTime");
 
         // Generate individual test report
         HtmlReportGenerator.generateHtmlReport(
@@ -95,7 +88,6 @@ public class Hooks {
         if (driver != null) {
             DriverManager.quitDriver();
         }
-        testContext.remove();
         StepNamePlugin.clearCurrentStep(); // Clears thread local
     }
 
@@ -110,5 +102,8 @@ public class Hooks {
         return String.format("%s: %s",
                 error.getClass().getSimpleName(),
                 error.getMessage());
+    }
+    public static Map<String, Object> getTestContext() {
+        return TestContextUtil.getTestContext();
     }
 }
