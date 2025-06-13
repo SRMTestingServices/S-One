@@ -57,6 +57,7 @@ public class DriverManager {
 			UiAutomator2Options options = new UiAutomator2Options()
 					.setPlatformName(ConfigReader.getProperty("android.platform.name"))
 					.setDeviceName(ConfigReader.getProperty("android.device.name"))
+					.setAutomationName(ConfigReader.getProperty("android.automation.name"))
 					.setApp(ConfigReader.getProperty("android.app.path"));
 
 			try {
