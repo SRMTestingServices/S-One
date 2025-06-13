@@ -19,6 +19,19 @@ public class Hooks {
 
     private static final String PROJECT_NAME = ConfigReader.getProperty("project.name");
 
+    @BeforeAll
+    public static void globalSetup() {
+        if (ConfigReader.getProperty("platform").equalsIgnoreCase("android") ||
+                ConfigReader.getProperty("platform").equalsIgnoreCase("ios")) {
+            DriverManager.startAppiumServer();
+        }
+    }
+
+    @AfterAll
+    public static void globalTeardown() {
+        DriverManager.stopAppiumServer();
+    }
+
     @Before(order = 1)
     public void setup(Scenario scenario) {
         // Initialize reporting structure once per test run

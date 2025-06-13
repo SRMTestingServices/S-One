@@ -5,13 +5,15 @@ import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.options.XCUITestOptions;
+import io.appium.java_client.service.local.AppiumDriverLocalService;
+import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.Browser;
 import utils.ConfigReader;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -19,6 +21,7 @@ public class DriverManager {
 	private static final ThreadLocal<WebDriver> webDriverThread = new ThreadLocal<>();
 	private static final ThreadLocal<AppiumDriver> mobileDriverThread = new ThreadLocal<>();
 	private static final String PLATFORM = ConfigReader.getProperty("platform").toLowerCase();
+	private static AppiumDriverLocalService appiumService;
 
 	public static WebDriver getDriver() {
 		if (PLATFORM.equalsIgnoreCase("web")) {
@@ -50,15 +53,39 @@ public class DriverManager {
 
 		webDriverThread.set(new ChromeDriver(options));
 	}
+	public static void startAppiumServer() {
+		if (appiumService == null || !appiumService.isRunning()) {
+			String nodePath = ConfigReader.getProperty("node.path");
+			String appiumJsPath = ConfigReader.getProperty("appium.js.path");
+
+			appiumService = new AppiumServiceBuilder()
+					.usingDriverExecutable(new File(nodePath))
+					.withAppiumJS(new File(appiumJsPath))
+					.usingAnyFreePort()
+					.build();
+
+			appiumService.start();
+			System.out.println("Appium server started at: " + appiumService.getUrl());
+		}
+	}
+
+	public static void stopAppiumServer() {
+		if (appiumService != null && appiumService.isRunning()) {
+			appiumService.stop();
+			System.out.println("Appium server stopped.");
+		}
+	}
 	private static AppiumDriver initializeMobileDriver() {
-		String appiumUrl = ConfigReader.getProperty("appium.server.url");
+		String appiumUrl = appiumService.getUrl().toString();
 
 		if (PLATFORM.equals("android")) {
 			UiAutomator2Options options = new UiAutomator2Options()
 					.setPlatformName(ConfigReader.getProperty("android.platform.name"))
 					.setDeviceName(ConfigReader.getProperty("android.device.name"))
 					.setAutomationName(ConfigReader.getProperty("android.automation.name"))
-					.setApp(ConfigReader.getProperty("android.app.path"));
+					.setAppPackage("com.android.settings")
+					.setAppActivity(".Settings");
+					//.setApp(ConfigReader.getProperty("android.app.path"));
 
 			try {
 				return new AndroidDriver(new URL(appiumUrl), options);
