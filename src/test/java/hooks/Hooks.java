@@ -53,9 +53,9 @@ public class Hooks {
         String screenshotPath = null;
         if (driver != null) {
             screenshotPath = ReportManager.getScreenshotPath("step_" + stepNumber);
-            ScreenshotUtil.captureScreenshot(driver, screenshotPath);
+            ScreenshotUtil.captureScreenshot(screenshotPath);
         }
-        String screenshotFullPath = ScreenshotUtil.captureScreenshot(driver, "step_" + stepNumber);
+        String screenshotFullPath = ScreenshotUtil.captureScreenshot("step_" + stepNumber);
         testSteps.add(new TestStep(
                 String.valueOf(stepNumber),
                 stepName,

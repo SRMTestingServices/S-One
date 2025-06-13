@@ -64,7 +64,7 @@ public class ReportManager {
         AtomicInteger counter = stepCounter.get();
 
         String screenshotPath = takeScreenshot ?
-                ScreenshotUtil.captureFullPageScreenshot(driver, "step_" + counter.get()) :
+                ScreenshotUtil.captureFullPageScreenshot("step_" + counter.get()) :
                 null;
 
         steps.add(new TestStep(

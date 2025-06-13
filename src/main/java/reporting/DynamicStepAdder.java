@@ -20,7 +20,7 @@ public class DynamicStepAdder {
         // 2. Capture screenshot if needed
         String screenshotPath = null;
         if (takeScreenshot && driver != null) {
-            screenshotPath = ScreenshotUtil.captureScreenshot(driver, "step_" + stepCounter.get());
+            screenshotPath = ScreenshotUtil.captureScreenshot("step_" + stepCounter.get());
         }
 
         // 3. Create and add the step

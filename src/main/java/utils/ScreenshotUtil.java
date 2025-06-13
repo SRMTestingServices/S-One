@@ -1,5 +1,6 @@
 package utils;
 
+import base.DriverManager;
 import org.openqa.selenium.*;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -22,7 +23,8 @@ public class ScreenshotUtil {
             this.filename = filename;
         }
     }
-    public static String captureScreenshot(WebDriver driver, String prefix) {
+    public static String captureScreenshot(String prefix) {
+        WebDriver driver = DriverManager.getDriver();
         if (driver == null) return null;
 
         try {
@@ -31,7 +33,13 @@ public class ScreenshotUtil {
             String fullPath = ReportManager.getScreenshotDirectory() + filename;
 
             Files.createDirectories(Paths.get(ReportManager.getScreenshotDirectory()));
-            File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            File srcFile;
+            if (driver instanceof TakesScreenshot) {
+                srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            }
+            else {
+                throw new UnsupportedOperationException("Driver does not support screenshot capture");
+            }
             FileUtils.copyFile(srcFile, new File(fullPath));
 
             // Return consistent file URL format
@@ -42,7 +50,8 @@ public class ScreenshotUtil {
         }
     }
 
-    public static String captureFullPageScreenshot(WebDriver driver, String prefix) {
+    public static String captureFullPageScreenshot(String prefix) {
+        WebDriver driver = DriverManager.getDriver();
         try {
             // Only works with ChromeDriver
             if (driver instanceof ChromeDriver) {
@@ -51,10 +60,10 @@ public class ScreenshotUtil {
                 FileUtils.copyFile(srcFile, new File(screenshotPath));
                 return screenshotPath;
             }
-            return captureScreenshot(driver, prefix); // fallback to regular screenshot
+            return captureScreenshot(prefix); // fallback to regular screenshot
         } catch (Exception e) {
             System.err.println("Failed to capture full page screenshot: " + e.getMessage());
-            return captureScreenshot(driver, prefix); // fallback to regular screenshot
+            return captureScreenshot(prefix); // fallback to regular screenshot
         }
     }
 }
