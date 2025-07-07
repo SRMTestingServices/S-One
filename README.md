@@ -9,9 +9,9 @@ This framework is built using **Cucumber BDD**, with support for **custom HTML r
 
 - ✅ BDD with Cucumber
 - 🧪 Supports Web UI testing (Selenium WebDriver)
-- 📱 Supports Android/iOS testing (Appium)
+- 📱 Supports Mobile Automation Android/iOS testing (Appium)
 - 🔌 REST API testing using RestAssured
-- 🖥️ Custom HTML Report with screenshots
+- 🖥️ Custom HTML Report with screenshots to support LifeSciences GxP process
 - 🚀 Parallel Execution with Thread-safe WebDriver
 - 🔁 Reusable Utility Libraries
 - 📁 Page Object Model (POM) structure
