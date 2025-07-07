@@ -3,8 +3,6 @@
 A robust Java-based Maven Test Automation Framework that supports **Web (UI)**, **API**, and **Mobile (Android/iOS)** testing.  
 This framework is built using **Cucumber BDD**, with support for **custom HTML reporting**, parallel execution, and easy extensibility.
 
-Developed with ❤️ by **Deepan Fernandez**
-
 ---
 
 ## ✨ Features
