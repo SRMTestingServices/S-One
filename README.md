@@ -1,3 +1,4 @@
+
 # 🚀 SOne BDD Automation Framework
 
 A robust Java-based Maven Test Automation Framework that supports **Web (UI)**, **API**, and **Mobile (Android/iOS)** testing.  
@@ -17,7 +18,6 @@ This framework is built using **Cucumber BDD**, with support for **custom HTML r
 - 📁 Page Object Model (POM) structure
 - 🧠 Ready for GenAI integrations (future-ready)
 - 🎯 Tag-based selective execution
-
 
 ---
 
@@ -44,7 +44,8 @@ cd <your-project>
 ```
 
 ### 2. Configure Application
-```bash
+
+```json
 {
   "platform": "web",         
   "browser": "chrome",
@@ -56,41 +57,125 @@ cd <your-project>
 }
 ```
 
-### 3. Launch Appium Server (if Mobile)
+---
 
-Install Node.js and npm
-Download and install from https://nodejs.org/.
+### 🛠️ Appium Setup (for Mobile Automation)
+
+#### Install Node.js and npm
+
+Download and install from [https://nodejs.org/](https://nodejs.org/).  
 Then verify:
+
 ```bash
 node -v
 npm -v
 ```
 
-Install Appium CLI
+#### Install Appium CLI
+
 ```bash
 npm install -g appium
 ```
 
-Launch Appium
+Verify installation:
+
+```bash
+appium -v
+```
+
+> 💡 Optional: Install Appium Doctor to check system dependencies
+```bash
+npm install -g appium-doctor
+appium-doctor
+```
+
+#### Install Android Studio
+
+- Download from [https://developer.android.com/studio](https://developer.android.com/studio)
+- During setup, install:
+    - Android SDK
+    - SDK Platform-tools
+    - SDK Build-tools
+    - Android Emulator
+    - AVD Manager
+
+#### Set Environment Variables
+
+**For macOS/Linux:**
+```bash
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_HOME/tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+```
+
+**For Windows:**
+```
+ANDROID_HOME = C:\Users\<username>\AppData\Local\Android\Sdk
+Add to PATH:
+%ANDROID_HOME%\emulator
+%ANDROID_HOME%\platform-tools
+%ANDROID_HOME%\tools
+%ANDROID_HOME%\tools\bin
+```
+
+> ✅ Restart terminal or IDE after setting.
+
+#### Create and Launch Android Emulator
+
+List devices:
+```bash
+avdmanager list device
+```
+
+Create emulator:
+```bash
+avdmanager create avd -n Pixel_API_33 -k "system-images;android-33;google_apis;x86_64"
+```
+
+Launch emulator:
+```bash
+emulator -avd Pixel_API_33
+```
+
+> 📝 Make sure the emulator is running before executing the test.
+
+---
+
+### 3. Launch Appium Server (if Mobile)
+
 ```bash
 appium
 ```
+
 Or use Appium Desktop GUI and start server on port 4723.
 
+---
+
 ### 4. Run Tests
+
 ```bash
 mvn clean test -Dcucumber.filter.tags="@web"
 ```
 
-### 📄 HTML Report<br>
+---
+
+### 📄 HTML Report
+
 After execution, a custom HTML report is generated at:
-```bash
+
+```
 /output/<project>_<timestamp>/main_report.html
 ```
+
 - Includes test case details
 - Screenshots for pass/fail steps
 - Summary with tag, feature, and status grouping
 
+---
+
 ### 👤 Author
-Deepan Fernandez<br>
+
+Deepan Fernandez  
 Test Automation Architect
