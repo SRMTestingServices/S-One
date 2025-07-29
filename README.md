@@ -58,6 +58,20 @@ cd <your-project>
 
 ### 3. Launch Appium Server (if Mobile)
 
+Install Node.js and npm
+Download and install from https://nodejs.org/.
+Then verify:
+```bash
+node -v
+npm -v
+```
+
+Install Appium CLI
+```bash
+npm install -g appium
+```
+
+Launch Appium
 ```bash
 appium
 ```
