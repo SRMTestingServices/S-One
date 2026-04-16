@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UCA — Unified Control Architecture | SRM Tech</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#1a1a2e;font-size:13px;overflow:hidden}
+:root{
+  --green:#1D9E75;--green-lt:#E1F5EE;--green-dk:#0F6E56;
+  --blue:#185FA5;--blue-lt:#E6F1FB;--blue-md:#378ADD;
+  --amber:#EF9F27;--amber-lt:#FAEEDA;--amber-dk:#854F0B;
+  --red:#E24B4A;--red-lt:#FCEBEB;--red-dk:#A32D2D;
+  --purple:#7F77DD;--purple-lt:#EEEDFE;--purple-dk:#3C3489;
+  --border:#E0E4EA;--bg:#F4F6F9;--surface:#fff;
+  --text:#1a1a2e;--text2:#5a6178;--text3:#9aa0b2;
+  --r:10px;--rs:6px
+}
+.app{display:flex;height:100vh}
+.sb{width:218px;background:#1F2B3E;flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto}
+.sb-logo{padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.lb2{width:32px;height:32px;border-radius:8px;background:var(--green);display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.lt{font-size:14px;font-weight:600;color:#fff;margin-left:8px;vertical-align:middle}
+.ls{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;padding-left:40px}
+.sb-sec{padding:12px 12px 3px;font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em}
+.nav{display:flex;align-items:center;gap:9px;padding:8px 12px;cursor:pointer;border-radius:var(--rs);margin:1px 6px;color:rgba(255,255,255,.55);font-size:12px;transition:all .15s}
+.nav:hover{background:rgba(255,255,255,.07);color:#fff}
+.nav.on{background:rgba(29,158,117,.18);color:#5DCAA5}
+.ni{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.ni-ov{background:rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.ni-a{background:rgba(29,158,117,.25);color:#5DCAA5}
+.ni-b{background:rgba(24,95,165,.25);color:#85B7EB}
+.ni-c{background:rgba(239,159,39,.25);color:#FAC775}
+.ni-d{background:rgba(127,119,221,.25);color:#AFA9EC}
+.ni-ai{background:rgba(212,83,126,.2);color:#ED93B1}
+.ni-cp{background:rgba(226,75,74,.15);color:#F09595}
+.sb-foot{margin-top:auto;padding:12px 14px;border-top:1px solid rgba(255,255,255,.08);font-size:10px;color:rgba(255,255,255,.3);line-height:1.6}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:4px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.pt{font-size:15px;font-weight:600;color:var(--text)}
+.ps{font-size:11px;color:var(--text3);margin-top:1px}
+.tbr{display:flex;gap:8px;align-items:center}
+.badge{padding:3px 11px;border-radius:20px;font-size:11px;font-weight:500}
+.b-live{background:var(--green-lt);color:var(--green-dk)}
+.b-usr{background:#F0F1F4;color:var(--text2)}
+.content{flex:1;overflow-y:auto;padding:18px 22px}
+.sec{display:none}.sec.on{display:block}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.g2{display:grid;grid-template-columns:1.6fr 1fr;gap:13px;margin-bottom:13px}
+.g2b{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:13px}
+.gcol{display:flex;flex-direction:column;gap:13px}
+.kc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:13px 15px}
+.kl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.kv{font-size:25px;font-weight:700;color:var(--text);line-height:1}
+.kv span{font-size:12px;font-weight:400;color:var(--text3)}
+.kt{font-size:10px;margin-top:3px}
+.tu{color:var(--green-dk)}.td{color:var(--red-dk)}.tn{color:var(--blue)}
+.kbar{height:3px;background:#EEF0F4;border-radius:2px;margin-top:7px;overflow:hidden}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.ptitle{font-size:13px;font-weight:600;color:var(--text)}
+.ptag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+.pt-g{background:var(--green-lt);color:var(--green-dk)}
+.pt-b{background:var(--blue-lt);color:var(--blue)}
+.pt-a{background:var(--amber-lt);color:var(--amber-dk)}
+.pt-r{background:var(--red-lt);color:var(--red-dk)}
+.pt-p{background:var(--purple-lt);color:var(--purple-dk)}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{text-align:left;padding:5px 8px;font-size:9px;color:var(--text3);font-weight:600;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.tbl td{padding:8px 8px;border-bottom:1px solid #F5F6F8;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#FAFBFC;cursor:pointer}
+.tid{font-family:monospace;font-size:10px;color:var(--text3);background:#F5F6F8;padding:2px 5px;border-radius:3px}
+.tname{font-size:12px;color:var(--text);font-weight:500}
+.tsub{font-size:10px;color:var(--text3)}
+.sp{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;white-space:nowrap}
+.sp-pass{background:var(--green-lt);color:var(--green-dk)}
+.sp-fail{background:var(--red-lt);color:var(--red-dk)}
+.sp-warn{background:var(--amber-lt);color:var(--amber-dk)}
+.sp-mon{background:var(--blue-lt);color:var(--blue)}
+.lb-a{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;background:var(--green-lt);color:var(--green-dk)}
+.lb-b{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;background:var(--blue-lt);color:var(--blue)}
+.lb-c{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;background:var(--amber-lt);color:var(--amber-dk)}
+.lb-d{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:700;background:var(--purple-lt);color:var(--purple-dk)}
+.frow{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.fb{padding:4px 12px;border-radius:16px;font-size:11px;cursor:pointer;border:1px solid var(--border);color:var(--text2);background:var(--surface);font-weight:500;transition:all .15s}
+.fb:hover{border-color:var(--blue);color:var(--blue)}
+.fb.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.spark{display:flex;align-items:flex-end;gap:2px;height:16px}
+.sb3{width:5px;border-radius:1px;min-height:2px}
+.capa{background:#FAFBFC;border:1px solid var(--border);border-radius:var(--rs);padding:10px 12px;margin-bottom:7px;border-left:3px solid transparent}
+.capa:last-child{margin-bottom:0}
+.capa-crit{border-left-color:var(--red)}
+.capa-high{border-left-color:var(--amber)}
+.capa-med{border-left-color:var(--blue-md)}
+.ctop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px}
+.cname{font-size:12px;font-weight:600;color:var(--text)}
+.cmeta{font-size:10px;color:var(--text3);margin-bottom:5px}
+.cbar{height:4px;background:#E8EAED;border-radius:2px;overflow:hidden}
+.cfoot{display:flex;justify-content:space-between;margin-top:4px;font-size:10px;color:var(--text3)}
+.ri{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid #F5F6F8}
+.ri:last-child{border-bottom:none}
+.rdot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.rdot-c{background:var(--red)}.rdot-h{background:var(--amber)}.rdot-m{background:var(--blue-md)}
+.rtitle{font-size:12px;font-weight:500;color:var(--text)}
+.rmeta{font-size:10px;color:var(--text3);margin-top:2px}
+.rbadge{font-size:10px;padding:1px 7px;border-radius:8px;margin-top:3px;display:inline-block;font-weight:500}
+.rb-c{background:var(--red-lt);color:var(--red-dk)}
+.rb-h{background:var(--amber-lt);color:var(--amber-dk)}
+.rb-m{background:var(--blue-lt);color:var(--blue)}
+.mr{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ml{font-size:11px;color:var(--text2);flex-shrink:0;width:120px}
+.mt2{flex:1;height:5px;background:#EEF0F4;border-radius:3px;overflow:hidden}
+.mf{height:100%;border-radius:3px}
+.mfg{background:var(--green)}.mfb{background:var(--blue-md)}.mfa{background:var(--amber)}.mfr{background:var(--red)}.mfp{background:var(--purple)}
+.mp{font-size:10px;color:var(--text3);width:26px;text-align:right;flex-shrink:0}
+.ai2{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #F5F6F8;font-size:11px}
+.ai2:last-child{border-bottom:none}
+.atime{color:var(--text3);width:36px;flex-shrink:0;font-size:10px}
+.adot{width:6px;height:6px;border-radius:50%;margin-top:3px;flex-shrink:0}
+.atxt{color:var(--text2);flex:1;line-height:1.4}
+.hmg{display:grid;grid-template-columns:62px 1fr;gap:4px;align-items:center;margin-bottom:3px}
+.hmc{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.hmcell{height:21px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600}
+.hm-p{background:var(--green-lt);color:var(--green-dk)}
+.hm-w{background:var(--amber-lt);color:var(--amber-dk)}
+.hm-f{background:var(--red-lt);color:var(--red-dk)}
+.evrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F5F6F8}
+.evrow:last-child{border-bottom:none}
+.evicon{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.evname{font-size:12px;font-weight:500;color:var(--text)}
+.evmeta{font-size:10px;color:var(--text3)}
+.dl{padding:4px 10px;border-radius:var(--rs);background:var(--green-lt);color:var(--green-dk);font-size:10px;cursor:pointer;font-weight:500;border:none;flex-shrink:0}
+.aimc{background:#FAFBFC;border:1px solid var(--border);border-radius:var(--rs);padding:11px;margin-bottom:7px}
+.aimc:last-child{margin-bottom:0}
+.aimtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.aimname{font-size:12px;font-weight:600;color:var(--text)}
+.dbar{height:6px;background:#EEF0F4;border-radius:3px;overflow:hidden;margin-bottom:3px}
+.dfill{height:100%;border-radius:3px}
+.gono{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--rs);margin-bottom:6px;border:1px solid var(--border);background:#FAFBFC}
+.go-go{border-left:3px solid var(--green)}
+.go-no{border-left:3px solid var(--red)}
+.go-badge{font-size:10px;padding:2px 7px;border-radius:5px;font-weight:700}
+.go-g{background:var(--green-lt);color:var(--green-dk)}
+.go-n{background:var(--red-lt);color:var(--red-dk)}
+.ibox{background:var(--blue-lt);border-radius:var(--rs);padding:9px 11px;font-size:11px;color:var(--blue);margin-top:8px;line-height:1.5}
+.wbox{background:var(--amber-lt);border-radius:var(--rs);padding:9px 11px;font-size:11px;color:var(--amber-dk);margin-top:8px;line-height:1.5}
+.btn{display:flex;align-items:center;justify-content:center;padding:7px;border-radius:var(--rs);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text2);width:100%;margin-top:9px}
+.btn:hover{background:#F5F6F8}
+.addbtn{width:auto;margin:0;padding:6px 14px;font-size:11px;background:var(--green);color:#fff;border-color:var(--green);border-radius:var(--rs);cursor:pointer;font-weight:500;border:none}
+.addbtn:hover{background:var(--green-dk)}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);padding:22px;width:520px;max-height:80vh;overflow-y:auto;border:1px solid var(--border)}
+.modal h3{font-size:15px;font-weight:600;margin-bottom:14px;color:var(--text)}
+.form-row{margin-bottom:11px}
+.form-row label{display:block;font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:500}
+.form-row input,.form-row select,.form-row textarea{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;color:var(--text);background:var(--surface);font-family:inherit}
+.form-row textarea{height:65px;resize:vertical}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{outline:none;border-color:var(--blue)}
+.mrow2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-actions{display:flex;gap:8px;margin-top:14px;justify-content:flex-end}
+.mcan{padding:7px 16px;border-radius:var(--rs);border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;font-size:12px}
+.msave{padding:7px 16px;border-radius:var(--rs);border:none;background:var(--green);color:#fff;cursor:pointer;font-size:12px;font-weight:500}
+.kfill{height:100%;border-radius:2px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="sb">
+  <div class="sb-logo">
+    <span class="lb2">UCA</span>
+    <span class="lt">SRM Tech</span>
+    <div class="ls">Unified Control Architecture</div>
+  </div>
+  <div class="sb-sec">Main</div>
+  <div class="nav on" onclick="go('overview',this)"><div class="ni ni-ov">&#9672;</div>Overview</div>
+  <div class="sb-sec">UCA Layers</div>
+  <div class="nav" onclick="go('governance',this)"><div class="ni ni-a">A</div>Governance</div>
+  <div class="nav" onclick="go('controls',this)"><div class="ni ni-b">B</div>Controls Assurance</div>
+  <div class="nav" onclick="go('risk',this)"><div class="ni ni-c">C</div>Risk Management</div>
+  <div class="nav" onclick="go('evidence',this)"><div class="ni ni-d">D</div>Evidence &amp; Audit</div>
+  <div class="sb-sec">Intelligence</div>
+  <div class="nav" onclick="go('aiops',this)"><div class="ni ni-ai">AI</div>AI Ops</div>
+  <div class="nav" onclick="go('capa',this)"><div class="ni ni-cp">&#8634;</div>CAPA Manager</div>
+  <div class="sb-foot">
+    <span class="sdot"></span>Live monitoring active<br>
+    <span style="margin-left:10px">AbbVie &middot; QA Lead &middot; v2.4.1</span>
+  </div>
+</div>
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="pt" id="pg-title">UCA Overview &mdash; Quality Intelligence Dashboard</div>
+      <div class="ps" id="pg-sub">Real-time control posture across all four UCA layers &middot; SRM Tech</div>
+    </div>
+    <div class="tbr">
+      <span class="badge b-live">&#9679; Live</span>
+      <span class="badge b-usr">AbbVie &middot; QA Lead</span>
+      <button class="addbtn" onclick="openModal()">+ Add Control</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <!-- OVERVIEW -->
+    <div class="sec on" id="sec-overview">
+      <div class="g4">
+        <div class="kc"><div class="kl">Overall control score</div><div class="kv">87<span>%</span></div><div class="kt tu">&#8593; 4% vs last cycle</div><div class="kbar"><div class="kfill" style="width:87%;background:var(--green)"></div></div></div>
+        <div class="kc"><div class="kl">Controls passing</div><div class="kv">142<span>/163</span></div><div class="kt td">&#8595; 3 failing &mdash; action needed</div><div class="kbar"><div class="kfill" style="width:87%;background:var(--blue-md)"></div></div></div>
+        <div class="kc"><div class="kl">Open CAPAs</div><div class="kv">7</div><div class="kt tu">3 closed this week</div><div class="kbar"><div class="kfill" style="width:43%;background:var(--amber)"></div></div></div>
+        <div class="kc"><div class="kl">Audit readiness</div><div class="kv">94<span>%</span></div><div class="kt tu">Evidence auto-packaged</div><div class="kbar"><div class="kfill" style="width:94%;background:var(--green)"></div></div></div>
+      </div>
+      <div class="g2">
+        <div class="panel">
+          <div class="ph"><div class="ptitle">Live control monitor</div><span style="font-size:10px;color:var(--text3)">Updated 2 min ago</span></div>
+          <table class="tbl">
+            <thead><tr><th>Layer</th><th>Control</th><th>System</th><th>Status</th><th>Last run</th></tr></thead>
+            <tbody>
+              <tr><td><span class="lb-a">A</span></td><td><div class="tname">SOP &rarr; Control traceability</div><div class="tsub">FDA 21 CFR Part 11</div></td><td>Veeva</td><td><span class="sp sp-pass">Passing</span></td><td style="color:var(--text3)">2h ago</td></tr>
+              <tr><td><span class="lb-a">A</span></td><td><div class="tname">Regulatory library &mdash; EU Annex 11</div><div class="tsub">EMA compliance</div></td><td>Reg Lib</td><td><span class="sp sp-pass">Passing</span></td><td style="color:var(--text3)">4h ago</td></tr>
+              <tr><td><span class="lb-b">B</span></td><td><div class="tname">L2 monitoring &mdash; Commercial</div><div class="tsub">Model N &middot; SAP</div></td><td>Model N</td><td><span class="sp sp-mon">Monitoring</span></td><td style="color:var(--text3)">Live</td></tr>
+              <tr><td><span class="lb-b">B</span></td><td><div class="tname">CAPA closed-loop &mdash; Veeva</div><div class="tsub">GxP</div></td><td>Veeva</td><td><span class="sp sp-fail">Failing</span></td><td style="color:var(--text3)">1d ago</td></tr>
+              <tr><td><span class="lb-c">C</span></td><td><div class="tname">Risk register sync &mdash; BTS</div><div class="tsub">Live ops</div></td><td>BTS</td><td><span class="sp sp-warn">Drifting</span></td><td style="color:var(--text3)">6h ago</td></tr>
+              <tr><td><span class="lb-c">C</span></td><td><div class="tname">AI model drift detection</div><div class="tsub">GxP audit trail</div></td><td>ML Ops</td><td><span class="sp sp-warn">Review</span></td><td style="color:var(--text3)">3h ago</td></tr>
+              <tr><td><span class="lb-d">D</span></td><td><div class="tname">Evidence auto-capture</div><div class="tsub">Tamper-evident</div></td><td>Evidence</td><td><span class="sp sp-pass">Passing</span></td><td style="color:var(--text3)">30m ago</td></tr>
+              <tr><td><span class="lb-d">D</span></td><td><div class="tname">Audit bundle generation</div><div class="tsub">1-click packages</div></td><td>Audit</td><td><span class="sp sp-pass">Ready</span></td><td style="color:var(--text3)">1h ago</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="gcol">
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Active risk signals</div><span class="ptag pt-r">3 active</span></div>
+            <div class="ri"><div class="rdot rdot-c"></div><div><div class="rtitle">CAPA closure gap &mdash; Veeva</div><div class="rmeta">Control B-07 failed &middot; Overdue 4 days</div><span class="rbadge rb-c">Critical</span></div></div>
+            <div class="ri"><div class="rdot rdot-h"></div><div><div class="rtitle">AI model drift &mdash; forecasting</div><div class="rmeta">Drift threshold exceeded &middot; GxP flagged</div><span class="rbadge rb-h">High</span></div></div>
+            <div class="ri"><div class="rdot rdot-m"></div><div><div class="rtitle">APAC process adoption gap</div><div class="rmeta">SOP adherence 71% &middot; Below threshold</div><span class="rbadge rb-m">Medium</span></div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Layer health</div></div>
+            <div class="mr"><div class="ml">A &mdash; Governance</div><div class="mt2"><div class="mf mfg" style="width:88%"></div></div><div class="mp">88%</div></div>
+            <div class="mr"><div class="ml">B &mdash; Controls</div><div class="mt2"><div class="mf mfb" style="width:87%"></div></div><div class="mp">87%</div></div>
+            <div class="mr"><div class="ml">C &mdash; Risk</div><div class="mt2"><div class="mf mfa" style="width:73%"></div></div><div class="mp">73%</div></div>
+            <div class="mr"><div class="ml">D &mdash; Evidence</div><div class="mt2"><div class="mf mfp" style="width:94%"></div></div><div class="mp">94%</div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Recent activity</div></div>
+            <div class="ai2"><div class="atime">Now</div><div class="adot" style="background:var(--green)"></div><div class="atxt">Q2 evidence bundle auto-generated &mdash; ready</div></div>
+            <div class="ai2"><div class="atime">2m</div><div class="adot" style="background:var(--red)"></div><div class="atxt">Risk signal raised &mdash; AI model drift</div></div>
+            <div class="ai2"><div class="atime">14m</div><div class="adot" style="background:var(--amber)"></div><div class="atxt">CAPA-031 overdue alert sent to J. Patel</div></div>
+            <div class="ai2"><div class="atime">1h</div><div class="adot" style="background:var(--green)"></div><div class="atxt">Control A-04 re-tested and passed</div></div>
+            <div class="ai2"><div class="atime">2h</div><div class="adot" style="background:var(--blue-md)"></div><div class="atxt">L2 cycle complete &mdash; 142/163 passing</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GOVERNANCE -->
+    <div class="sec" id="sec-governance">
+      <div class="g5">
+        <div class="kc"><div class="kl">SOP coverage</div><div class="kv">92<span>%</span></div><div class="kt tu">&#8593; 3% this month</div><div class="kbar"><div class="kfill" style="width:92%;background:var(--green)"></div></div></div>
+        <div class="kc"><div class="kl">Regulatory mapping</div><div class="kv">88<span>%</span></div><div class="kt tu">FDA &middot; EMA &middot; MHRA</div><div class="kbar"><div class="kfill" style="width:88%;background:var(--green)"></div></div></div>
+        <div class="kc"><div class="kl">Process adoption</div><div class="kv">74<span>%</span></div><div class="kt td">&#8595; APAC gap flagged</div><div class="kbar"><div class="kfill" style="width:74%;background:var(--amber)"></div></div></div>
+        <div class="kc"><div class="kl">Digital health controls</div><div class="kv">65<span>%</span></div><div class="kt tn">/cloud in progress</div><div class="kbar"><div class="kfill" style="width:65%;background:var(--blue-md)"></div></div></div>
+        <div class="kc"><div class="kl">Policy docs governed</div><div class="kv">114<span>/124</span></div><div class="kt tu">&#8593; 6 this week</div><div class="kbar"><div class="kfill" style="width:92%;background:var(--green)"></div></div></div>
+      </div>
+      <div class="g2">
+        <div class="panel">
+          <div class="ph"><div class="ptitle">SOP &rarr; Control mapping status</div><span class="ptag pt-a">8 unmapped</span></div>
+          <table class="tbl">
+            <thead><tr><th>SOP ID</th><th>SOP name</th><th>Regulation</th><th>Controls</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tid">SOP-001</span></td><td><div class="tname">Change Control Process</div><div class="tsub">GxP &middot; Manufacturing</div></td><td>21 CFR Part 11</td><td>4/4</td><td><span class="sp sp-pass">Complete</span></td></tr>
+              <tr><td><span class="tid">SOP-002</span></td><td><div class="tname">Deviation Management</div><div class="tsub">GxP &middot; Quality</div></td><td>ICH Q10</td><td>3/3</td><td><span class="sp sp-pass">Complete</span></td></tr>
+              <tr><td><span class="tid">SOP-014</span></td><td><div class="tname">Validation Protocol Sign-off</div><div class="tsub">GxP &middot; IT</div></td><td>GAMP 5</td><td>5/5</td><td><span class="sp sp-pass">Complete</span></td></tr>
+              <tr><td><span class="tid">SOP-021</span></td><td><div class="tname">APAC Process Adoption</div><div class="tsub">Regional &middot; Vendor</div></td><td>EMA</td><td>2/4</td><td><span class="sp sp-warn">Partial</span></td></tr>
+              <tr><td><span class="tid">SOP-033</span></td><td><div class="tname"> Governance Framework</div><div class="tsub">Digital Health</div></td><td>FDA </td><td>1/6</td><td><span class="sp sp-fail">In progress</span></td></tr>
+              <tr><td><span class="tid">SOP-041</span></td><td><div class="tname">Cloud Platform Validation</div><div class="tsub">SaaS &middot; Cloud</div></td><td>EU Annex 11</td><td>3/4</td><td><span class="sp sp-warn">Partial</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="gcol">
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Regulatory library coverage</div></div>
+            <div class="mr"><div class="ml">FDA 21 CFR Part 11</div><div class="mt2"><div class="mf mfg" style="width:96%"></div></div><div class="mp">96%</div></div>
+            <div class="mr"><div class="ml">EU Annex 11</div><div class="mt2"><div class="mf mfg" style="width:92%"></div></div><div class="mp">92%</div></div>
+            <div class="mr"><div class="ml">MHRA</div><div class="mt2"><div class="mf mfb" style="width:84%"></div></div><div class="mp">84%</div></div>
+            <div class="mr"><div class="ml">ICH Q10</div><div class="mt2"><div class="mf mfg" style="width:91%"></div></div><div class="mp">91%</div></div>
+            <div class="mr"><div class="ml">GAMP 5 / CSA</div><div class="mt2"><div class="mf mfb" style="width:78%"></div></div><div class="mp">78%</div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Governance gaps</div><span class="ptag pt-a">3 items</span></div>
+            <div class="ri"><div class="rdot rdot-h"></div><div><div class="rtitle">APAC process adoption gap</div><div class="rmeta">SOP-021 &middot; 2 of 4 controls mapped</div><span class="rbadge rb-h">High</span></div></div>
+            <div class="ri"><div class="rdot rdot-h"></div><div><div class="rtitle"> governance incomplete</div><div class="rmeta">SOP-033 &middot; 5 controls pending</div><span class="rbadge rb-h">High</span></div></div>
+            <div class="ri"><div class="rdot rdot-m"></div><div><div class="rtitle">Cloud validation partial</div><div class="rmeta">SOP-041 &middot; 1 control unmapped</div><span class="rbadge rb-m">Medium</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROLS ASSURANCE -->
+    <div class="sec" id="sec-controls">
+      <div class="g5">
+        <div class="kc"><div class="kl">Controls passing</div><div class="kv">142<span>/163</span></div><div class="kt tu">&#8593; 5 resolved</div><div class="kbar"><div class="kfill" style="width:87%;background:var(--green)"></div></div></div>
+        <div class="kc"><div class="kl">Failing</div><div class="kv" style="color:var(--red)">3</div><div class="kt td">&#8593; 1 new today</div><div class="kbar"><div class="kfill" style="width:18%;background:var(--red)"></div></div></div>
+        <div class="kc"><div class="kl">Drifting</div><div class="kv" style="color:var(--amber-dk)">18</div><div class="kt tn">Monitoring active</div><div class="kbar"><div class="kfill" style="width:11%;background:var(--amber)"></div></div></div>
+        <div class="kc"><div class="kl">CAPAs triggered</div><div class="kv">7</div><div class="kt tu">3 closed this week</div><div class="kbar"><div class="kfill" style="width:43%;background:var(--blue-md)"></div></div></div>
+        <div class="kc"><div class="kl">Next full cycle</div><div class="kv" style="font-size:18px;padding-top:2px">46m</div><div class="kt tn">Auto-scheduled</div><div class="kbar"><div class="kfill" style="width:72%;background:var(--blue-md)"></div></div></div>
+      </div>
+      <div class="g2">
+        <div class="panel">
+          <div class="ph"><div class="ptitle">Control test results</div><span class="ptag pt-b">163 controls &middot; Auto-executed</span></div>
+          <div class="frow">
+            <div class="fb on" id="fb-all" onclick="filterCtrl('all')">All (163)</div>
+            <div class="fb" id="fb-pass" onclick="filterCtrl('pass')">Passing (142)</div>
+            <div class="fb" id="fb-fail" onclick="filterCtrl('fail')">Failing (3)</div>
+            <div class="fb" id="fb-warn" onclick="filterCtrl('warn')">Drifting (18)</div>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>ID</th><th>Control</th><th>System</th><th>Status</th><th>Frequency</th><th>Trend</th><th>Last run</th></tr></thead>
+            <tbody id="ctrl-body">
+              <tr data-s="fail"><td><span class="tid">B-07</span></td><td><div class="tname">CAPA closed-loop validation</div><div class="tsub">Veeva Vault &middot; GxP</div></td><td>Veeva</td><td><span class="sp sp-fail">Failing</span></td><td><span style="font-size:10px;color:var(--text3)">Daily</span></td><td><div class="spark"><div class="sb3" style="height:80%;background:var(--green)"></div><div class="sb3" style="height:100%;background:var(--green)"></div><div class="sb3" style="height:60%;background:var(--amber)"></div><div class="sb3" style="height:30%;background:var(--red)"></div><div class="sb3" style="height:20%;background:var(--red)"></div></div></td><td style="color:var(--text3)">1d ago</td></tr>
+              <tr data-s="fail"><td><span class="tid">B-14</span></td><td><div class="tname">Inspection readiness check</div><div class="tsub">QMS &middot; SOX</div></td><td>QMS</td><td><span class="sp sp-fail">Failing</span></td><td><span style="font-size:10px;color:var(--text3)">Weekly</span></td><td><div class="spark"><div class="sb3" style="height:90%;background:var(--green)"></div><div class="sb3" style="height:70%;background:var(--green)"></div><div class="sb3" style="height:50%;background:var(--amber)"></div><div class="sb3" style="height:25%;background:var(--red)"></div><div class="sb3" style="height:20%;background:var(--red)"></div></div></td><td style="color:var(--text3)">2d ago</td></tr>
+              <tr data-s="fail"><td><span class="tid">B-22</span></td><td><div class="tname">Audit evidence chain integrity</div><div class="tsub">Evidence repo &middot; 21 CFR</div></td><td>Evidence</td><td><span class="sp sp-fail">Failing</span></td><td><span style="font-size:10px;color:var(--text3)">Daily</span></td><td><div class="spark"><div class="sb3" style="height:100%;background:var(--green)"></div><div class="sb3" style="height:80%;background:var(--green)"></div><div class="sb3" style="height:80%;background:var(--green)"></div><div class="sb3" style="height:40%;background:var(--amber)"></div><div class="sb3" style="height:15%;background:var(--red)"></div></div></td><td style="color:var(--text3)">6h ago</td></tr>
+              <tr data-s="warn"><td><span class="tid">B-03</span></td><td><div class="tname">L2 monitoring &mdash; Commercial</div><div class="tsub">Model N &middot; SAP ECC</div></td><td>Model N</td><td><span class="sp sp-warn">Drifting</span></td><td><span style="font-size:10px;color:var(--text3)">4-hourly</span></td><td><div class="spark"><div class="sb3" style="height:100%;background:var(--green)"></div><div class="sb3" style="height:90%;background:var(--green)"></div><div class="sb3" style="height:80%;background:var(--green)"></div><div class="sb3" style="height:70%;background:var(--amber)"></div><div class="sb3" style="height:65%;background:var(--amber)"></div></div></td><td style="color:var(--text3)">3h ago</td></tr>
+              <tr data-s="warn"><td><span class="tid">B-09</span></td><td><div class="tname">SOX workpaper controls</div><div class="tsub">Finance &middot; SOX 302/404</div></td><td>Finance</td><td><span class="sp sp-warn">Drifting</span></td><td><span style="font-size:10px;color:var(--text3)">Weekly</span></td><td><div class="spark"><div class="sb3" style="height:80%;background:var(--green)"></div><div class="sb3" style="height:75%;background:var(--green)"></div><div class="sb3" style="height:72%;background:var(--amber)"></div><div class="sb3" style="height:68%;background:var(--amber)"></div><div class="sb3" style="height:60%;background:var(--amber)"></div></div></td><td style="color:var(--text3)">1d ago</td></tr>
+              <tr data-s="pass"><td><span class="tid">B-01</span></td><td><div class="tname">SAP S/4HANA change control</div><div class="tsub">SAP &middot; GxP</div></td><td>SAP</td><td><span class="sp sp-pass">Passing</span></td><td><span style="font-size:10px;color:var(--text3)">Daily</span></td><td><div class="spark"><div class="sb3" style="height:80%;background:var(--green)"></div><div class="sb3" style="height:90%;background:var(--green)"></div><div class="sb3" style="height:85%;background:var(--green)"></div><div class="sb3" style="height:95%;background:var(--green)"></div><div class="sb3" style="height:100%;background:var(--green)"></div></div></td><td style="color:var(--text3)">2h ago</td></tr>
+              <tr data-s="pass"><td><span class="tid">B-02</span></td><td><div class="tname">Change control sign-off</div><div class="tsub">Veeva Vault &middot; GxP</div></td><td>Veeva</td><td><span class="sp sp-pass">Passing</span></td><td><span style="font-size:10px;color:var(--text3)">Per event</span></td><td><div class="spark"><div class="sb3" style="height:100%;background:var(--green)"></div><div class="sb3" style="height:100%;background:var(--green)"></div><div class="sb3" style="height:100%;background:var(--green)"></div><div class="sb3" style="height:95%;background:var(--green)"></div><div class="sb3" style="height:100%;background:var(--green)"></div></div></td><td style="color:var(--text3)">30m ago</td></tr>
+              <tr data-s="pass"><td><span class="tid">B-05</span></td><td><div class="tname">User access review &mdash; IAM</div><div class="tsub">IAM &middot; 21 CFR Part 11</div></td><td>IAM</td><td><span class="sp sp-pass">Passing</span></td><td><span style="font-size:10px;color:var(--text3)">Monthly</span></td><td><div class="spark"><div class="sb3" style="height:90%;background:var(--green)"></div><div class="sb3" style="height:85%;background:var(--green)"></div><div class="sb3" style="height:95%;background:var(--green)"></div><div class="sb3" style="height:90%;background:var(--green)"></div><div class="sb3" style="height:100%;background:var(--green)"></div></div></td><td style="color:var(--text3)">3d ago</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="gcol">
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Open CAPAs</div><span class="ptag pt-r">3 overdue</span></div>
+            <div class="capa capa-crit"><div class="ctop"><div class="cname">CAPA-031 &mdash; Veeva closure gap</div><span class="sp sp-fail" style="font-size:10px">Overdue</span></div><div class="cmeta">B-07 &middot; J. Patel &middot; Due 3 days ago</div><div class="cbar"><div style="width:35%;height:100%;background:var(--red);border-radius:2px"></div></div><div class="cfoot"><span>35%</span><span style="color:var(--red-dk)">Auto-alert sent</span></div></div>
+            <div class="capa capa-high"><div class="ctop"><div class="cname">CAPA-030 &mdash; Inspection readiness</div><span class="sp sp-warn" style="font-size:10px">In progress</span></div><div class="cmeta">B-14 &middot; M. Singh &middot; Due in 2 days</div><div class="cbar"><div style="width:60%;height:100%;background:var(--amber);border-radius:2px"></div></div><div class="cfoot"><span>60%</span><span>Re-test scheduled</span></div></div>
+            <div class="capa capa-med"><div class="ctop"><div class="cname">CAPA-026 &mdash; Model N drift</div><span class="sp sp-mon" style="font-size:10px">On track</span></div><div class="cmeta">B-03 &middot; A. Kumar &middot; Due in 9 days</div><div class="cbar"><div style="width:78%;height:100%;background:var(--blue-md);border-radius:2px"></div></div><div class="cfoot"><span>78%</span><span>Re-test in 2 days</span></div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Control health heatmap</div><span class="ptag pt-b">7 days</span></div>
+            <div style="font-size:9px;color:var(--text3);display:grid;grid-template-columns:60px 1fr;gap:4px;margin-bottom:4px"><div></div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>T</span></div></div>
+            <div class="hmg"><span style="font-size:10px;color:var(--text2)">GxP</span><div class="hmc"><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div></div></div>
+            <div class="hmg"><span style="font-size:10px;color:var(--text2)">SOX</span><div class="hmc"><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-w">W</div><div class="hmcell hm-w">W</div><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-w">W</div></div></div>
+            <div class="hmg"><span style="font-size:10px;color:var(--text2)">CAPA</span><div class="hmc"><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-w">W</div><div class="hmcell hm-f">F</div><div class="hmcell hm-f">F</div><div class="hmcell hm-f">F</div></div></div>
+            <div class="hmg"><span style="font-size:10px;color:var(--text2)">SaaS</span><div class="hmc"><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-w">W</div><div class="hmcell hm-w">W</div><div class="hmcell hm-w">W</div></div></div>
+            <div class="hmg"><span style="font-size:10px;color:var(--text2)">Evidence</span><div class="hmc"><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-p">P</div><div class="hmcell hm-w">W</div><div class="hmcell hm-w">W</div><div class="hmcell hm-f">F</div><div class="hmcell hm-f">F</div></div></div>
+            <div style="display:flex;gap:10px;margin-top:8px;font-size:10px">
+              <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:2px;background:var(--green-lt)"></div><span style="color:var(--text3)">Pass</span></div>
+              <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:2px;background:var(--amber-lt)"></div><span style="color:var(--text3)">Drifting</span></div>
+              <div style="display:flex;align-items:center;gap:4px"><div style="width:10px;height:10px;border-radius:2px;background:var(--red-lt)"></div><span style="color:var(--text3)">Failing</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RISK MANAGEMENT -->
+    <div class="sec" id="sec-risk">
+      <div class="g4">
+        <div class="kc"><div class="kl">Active risk signals</div><div class="kv" style="color:var(--red)">4</div><div class="kt td">&#8593; 1 new today</div><div class="kbar"><div class="kfill" style="width:40%;background:var(--red)"></div></div></div>
+        <div class="kc"><div class="kl">Risk register live</div><div class="kv">70<span>%</span></div><div class="kt tn">30% not linked to controls</div><div class="kbar"><div class="kfill" style="width:70%;background:var(--amber)"></div></div></div>
+        <div class="kc"><div class="kl">Go/No-Go decisions</div><div class="kv">12</div><div class="kt tu">All documented</div><div class="kbar"><div class="kfill" style="width:90%;background:var(--green)"></div></div></div>
+        <div class="kc"><div class="kl">AI ops risk</div><div class="kv" style="color:var(--amber-dk)">2</div><div class="kt td">Drift detected</div><div class="kbar"><div class="kfill" style="width:20%;background:var(--amber)"></div></div></div>
+      </div>
+      <div class="g2">
+        <div class="panel">
+          <div class="ph"><div class="ptitle">Live risk register</div><span class="ptag pt-r">4 active signals</span></div>
+          <table class="tbl">
+            <thead><tr><th>Risk ID</th><th>Description</th><th>Layer</th><th>Business impact</th><th>Severity</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tid">RSK-014</span></td><td><div class="tname">CAPA closure gap &mdash; Veeva</div><div class="tsub">Control B-07 failing</div></td><td><span class="lb-b">B</span></td><td style="font-size:11px;color:var(--text2)">Regulatory exposure</td><td><span class="sp sp-fail">Critical</span></td><td><span class="sp sp-fail">Open</span></td></tr>
+              <tr><td><span class="tid">RSK-021</span></td><td><div class="tname">AI forecasting model drift</div><div class="tsub">GxP audit trail flagged</div></td><td><span class="lb-c">C</span></td><td style="font-size:11px;color:var(--text2)">Decision accuracy</td><td><span class="sp sp-fail">High</span></td><td><span class="sp sp-warn">Monitoring</span></td></tr>
+              <tr><td><span class="tid">RSK-019</span></td><td><div class="tname">Risk register BTS out of sync</div><div class="tsub">Control C-12 drifting</div></td><td><span class="lb-c">C</span></td><td style="font-size:11px;color:var(--text2)">Ops visibility gap</td><td><span class="sp sp-warn">High</span></td><td><span class="sp sp-warn">Drifting</span></td></tr>
+              <tr><td><span class="tid">RSK-008</span></td><td><div class="tname">APAC process adoption gap</div><div class="tsub">SOP adherence 71%</div></td><td><span class="lb-a">A</span></td><td style="font-size:11px;color:var(--text2)">Compliance drift</td><td><span class="sp sp-warn">Medium</span></td><td><span class="sp sp-mon">In progress</span></td></tr>
+              <tr><td><span class="tid">RSK-003</span></td><td><div class="tname">SOX workpaper drift</div><div class="tsub">Finance controls drifting</div></td><td><span class="lb-b">B</span></td><td style="font-size:11px;color:var(--text2)">Audit exposure</td><td><span class="sp sp-warn">Medium</span></td><td><span class="sp sp-warn">Drifting</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="gcol">
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Business risk translation</div></div>
+            <div style="background:#FEF9F0;border:1px solid #FAC775;border-radius:var(--rs);padding:10px;margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:var(--amber-dk);margin-bottom:3px">Revenue exposure</div><div style="font-size:11px;color:var(--text2)">CAPA closure gap could delay Q3 product release. Estimated: $2&ndash;4M revenue at risk if audit finding raised.</div></div>
+            <div style="background:#FFF0F0;border:1px solid #F7C1C1;border-radius:var(--rs);padding:10px;margin-bottom:8px"><div style="font-size:11px;font-weight:600;color:var(--red-dk);margin-bottom:3px">Regulatory exposure</div><div style="font-size:11px;color:var(--text2)">AI model drift in GxP context &mdash; FDA observation likely if not remediated within 14 days.</div></div>
+            <div style="background:#F0F6FF;border:1px solid #B5D4F4;border-radius:var(--rs);padding:10px"><div style="font-size:11px;font-weight:600;color:var(--blue);margin-bottom:3px">Operational impact</div><div style="font-size:11px;color:var(--text2)">BTS risk register out of sync &mdash; decisions being made without live risk view.</div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Go/No-Go decisions</div><span class="ptag pt-g">12 total</span></div>
+            <div class="gono go-go"><span class="go-badge go-g">GO</span><div style="flex:1;font-size:11px;color:var(--text)">SAP S/4HANA patch &middot; Risk accepted</div><span style="font-size:10px;color:var(--text3)">Today</span></div>
+            <div class="gono go-no"><span class="go-badge go-n">NO-GO</span><div style="flex:1;font-size:11px;color:var(--text)">Veeva Vault upgrade &middot; CAPA outstanding</div><span style="font-size:10px;color:var(--text3)">2d ago</span></div>
+            <div class="gono go-go"><span class="go-badge go-g">GO</span><div style="flex:1;font-size:11px;color:var(--text)">Model N SaaS update &middot; Controls verified</div><span style="font-size:10px;color:var(--text3)">5d ago</span></div>
+            <div class="gono go-go"><span class="go-badge go-g">GO</span><div style="flex:1;font-size:11px;color:var(--text)">APAC rollout &middot; Conditional approval</div><span style="font-size:10px;color:var(--text3)">1w ago</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EVIDENCE & AUDIT -->
+    <div class="sec" id="sec-evidence">
+      <div class="g4">
+        <div class="kc"><div class="kl">Audit readiness</div><div class="kv">94<span>%</span></div><div class="kt tu">Always-on posture</div><div class="kbar"><div class="kfill" style="width:94%;background:var(--green)"></div></div></div>
+        <div class="kc"><div class="kl">Evidence packages</div><div class="kv">47</div><div class="kt tu">Auto-generated</div><div class="kbar"><div class="kfill" style="width:80%;background:var(--green)"></div></div></div>
+        <div class="kc"><div class="kl">Traceability</div><div class="kv">89<span>%</span></div><div class="kt tu">Reg &rarr; Control &rarr; Evidence</div><div class="kbar"><div class="kfill" style="width:89%;background:var(--blue-md)"></div></div></div>
+        <div class="kc"><div class="kl">Next audit</div><div class="kv" style="font-size:18px;padding-top:2px">14d</div><div class="kt tn">FDA inspection</div><div class="kbar"><div class="kfill" style="width:94%;background:var(--green)"></div></div></div>
+      </div>
+      <div class="g2">
+        <div class="panel">
+          <div class="ph"><div class="ptitle">Evidence packages</div><span class="ptag pt-g">47 auto-generated</span></div>
+          <div class="evrow"><div class="evicon" style="background:var(--red-lt);color:var(--red-dk)">PDF</div><div style="flex:1"><div class="evname">Audit-2025-Q2 &mdash; GxP Full Package</div><div class="evmeta">163 controls &middot; FDA 21 CFR Part 11 &middot; Auto-generated today</div></div><span style="font-size:10px;color:var(--text3);margin-right:8px">4.2 MB</span><button class="dl" onclick="alert('Downloaded: Audit-2025-Q2-GxP.zip')">Download</button></div>
+          <div class="evrow"><div class="evicon" style="background:var(--blue-lt);color:var(--blue)">XLS</div><div style="flex:1"><div class="evname">Traceability Matrix &mdash; Q2 2025</div><div class="evmeta">Reg &rarr; Control &rarr; Evidence &middot; All layers</div></div><span style="font-size:10px;color:var(--text3);margin-right:8px">1.8 MB</span><button class="dl" onclick="alert('Downloaded: Traceability-Matrix-Q2.xlsx')">Download</button></div>
+          <div class="evrow"><div class="evicon" style="background:var(--green-lt);color:var(--green-dk)">DOC</div><div style="flex:1"><div class="evname">SOX Workpaper Bundle &mdash; FY2025</div><div class="evmeta">Finance controls &middot; 302/404 &middot; Signed</div></div><span style="font-size:10px;color:var(--text3);margin-right:8px">2.1 MB</span><button class="dl" onclick="alert('Downloaded: SOX-Workpapers-FY2025.docx')">Download</button></div>
+          <div class="evrow"><div class="evicon" style="background:var(--purple-lt);color:var(--purple-dk)">PDF</div><div style="flex:1"><div class="evname">AI Ops Validation Report</div><div class="evmeta">GxP audit trail &middot; Drift analysis &middot; Inventory</div></div><span style="font-size:10px;color:var(--text3);margin-right:8px">0.9 MB</span><button class="dl" onclick="alert('Downloaded: AI-Ops-Validation.pdf')">Download</button></div>
+          <div class="evrow"><div class="evicon" style="background:var(--amber-lt);color:var(--amber-dk)">PDF</div><div style="flex:1"><div class="evname">CAPA Closure Evidence &mdash; Q2 2025</div><div class="evmeta">7 CAPAs &middot; 3 closed &middot; Evidence chain intact</div></div><span style="font-size:10px;color:var(--text3);margin-right:8px">1.3 MB</span><button class="dl" onclick="alert('Downloaded: CAPA-Evidence-Q2.pdf')">Download</button></div>
+          <div class="wbox">&#9888; 2 minor gaps in CAPA documentation (CAPA-031, CAPA-030). Evidence capture 74% &mdash; expected full by end of week.</div>
+        </div>
+        <div class="gcol">
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Traceability coverage</div></div>
+            <div class="mr"><div class="ml">FDA 21 CFR Part 11</div><div class="mt2"><div class="mf mfg" style="width:96%"></div></div><div class="mp">96%</div></div>
+            <div class="mr"><div class="ml">EU Annex 11</div><div class="mt2"><div class="mf mfg" style="width:92%"></div></div><div class="mp">92%</div></div>
+            <div class="mr"><div class="ml">ICH Q10</div><div class="mt2"><div class="mf mfg" style="width:91%"></div></div><div class="mp">91%</div></div>
+            <div class="mr"><div class="ml">SOX 302/404</div><div class="mt2"><div class="mf mfb" style="width:88%"></div></div><div class="mp">88%</div></div>
+            <div class="mr"><div class="ml">GAMP 5 / CSA</div><div class="mt2"><div class="mf mfb" style="width:78%"></div></div><div class="mp">78%</div></div>
+            <div class="ibox">All critical regulatory chains complete. GAMP 5 at 78% &mdash;  controls in progress.</div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Evidence capture log</div></div>
+            <div class="ai2"><div class="atime">Now</div><div class="adot" style="background:var(--green)"></div><div class="atxt">Q2 GxP package auto-generated &mdash; 163 controls evidenced</div></div>
+            <div class="ai2"><div class="atime">30m</div><div class="adot" style="background:var(--green)"></div><div class="atxt">B-01 test evidence captured &mdash; tamper-evident hash stored</div></div>
+            <div class="ai2"><div class="atime">1h</div><div class="adot" style="background:var(--green)"></div><div class="atxt">Veeva Vault submission package ready &mdash; 21 CFR compliant</div></div>
+            <div class="ai2"><div class="atime">2h</div><div class="adot" style="background:var(--amber)"></div><div class="atxt">CAPA-031 evidence gap flagged &mdash; manual capture needed</div></div>
+            <div class="ai2"><div class="atime">4h</div><div class="adot" style="background:var(--green)"></div><div class="atxt">Traceability matrix updated &mdash; EU Annex 11 verified</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI OPS -->
+    <div class="sec" id="sec-aiops">
+      <div class="g4">
+        <div class="kc"><div class="kl">AI models governed</div><div class="kv">8<span>/14</span></div><div class="kt tn">6 pending validation</div><div class="kbar"><div class="kfill" style="width:57%;background:var(--amber)"></div></div></div>
+        <div class="kc"><div class="kl">Drift alerts</div><div class="kv" style="color:var(--amber-dk)">2</div><div class="kt td">&#8593; 1 new today</div><div class="kbar"><div class="kfill" style="width:20%;background:var(--amber)"></div></div></div>
+        <div class="kc"><div class="kl">GxP audit trail</div><div class="kv">100<span>%</span></div><div class="kt tu">All governed models traced</div><div class="kbar"><div class="kfill" style="width:100%;background:var(--green)"></div></div></div>
+        <div class="kc"><div class="kl">Validations complete</div><div class="kv">8</div><div class="kt tu">&#8593; 2 this month</div><div class="kbar"><div class="kfill" style="width:57%;background:var(--green)"></div></div></div>
+      </div>
+      <div class="g2">
+        <div class="panel">
+          <div class="ph"><div class="ptitle">AI model inventory</div><span class="ptag pt-a">2 drift alerts</span></div>
+          <table class="tbl">
+            <thead><tr><th>Model ID</th><th>Model name</th><th>Use case</th><th>GxP?</th><th>Validation</th><th>Drift</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tid">AI-001</span></td><td><div class="tname">Demand forecasting &mdash; ML</div><div class="tsub">Commercial &middot; Revenue ops</div></td><td>Forecasting</td><td><span class="sp sp-fail" style="font-size:9px">Yes</span></td><td><span class="sp sp-pass">Validated</span></td><td><span class="sp sp-fail">Drifting</span></td></tr>
+              <tr><td><span class="tid">AI-002</span></td><td><div class="tname">Quality defect classifier</div><div class="tsub">Manufacturing &middot; QC</div></td><td>Classification</td><td><span class="sp sp-fail" style="font-size:9px">Yes</span></td><td><span class="sp sp-pass">Validated</span></td><td><span class="sp sp-warn">Review</span></td></tr>
+              <tr><td><span class="tid">AI-003</span></td><td><div class="tname">Document review assistant</div><div class="tsub">SQA &middot; Validation docs</div></td><td>Review</td><td><span class="sp sp-mon" style="font-size:9px">No</span></td><td><span class="sp sp-pass">Validated</span></td><td><span class="sp sp-pass">Stable</span></td></tr>
+              <tr><td><span class="tid">AI-004</span></td><td><div class="tname">Risk signal engine</div><div class="tsub">UCA &middot; Control monitoring</div></td><td>Risk</td><td><span class="sp sp-fail" style="font-size:9px">Yes</span></td><td><span class="sp sp-pass">Validated</span></td><td><span class="sp sp-pass">Stable</span></td></tr>
+              <tr><td><span class="tid">AI-005</span></td><td><div class="tname">Insights dashboard AI</div><div class="tsub">QA Lead &middot; Reporting</div></td><td>Analytics</td><td><span class="sp sp-mon" style="font-size:9px">No</span></td><td><span class="sp sp-pass">Validated</span></td><td><span class="sp sp-pass">Stable</span></td></tr>
+              <tr><td><span class="tid">AI-009</span></td><td><div class="tname"> classification model</div><div class="tsub">Digital Health &middot; Regulatory</div></td><td>Regulatory</td><td><span class="sp sp-fail" style="font-size:9px">Yes</span></td><td><span class="sp sp-warn">Pending</span></td><td><span class="sp sp-mon">Not started</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="gcol">
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Drift monitoring</div><span class="ptag pt-r">2 active</span></div>
+            <div class="aimc"><div class="aimtop"><div class="aimname">AI-001 &mdash; Demand forecasting</div><span class="sp sp-fail" style="font-size:10px">Drifting</span></div><div style="font-size:10px;color:var(--text3);margin-bottom:5px">Drift score: 0.34 &middot; Threshold: 0.20 &middot; GxP: YES</div><div class="dbar"><div class="dfill" style="width:34%;background:var(--red)"></div></div><div style="font-size:10px;color:var(--red-dk);margin-top:3px">Exceeds threshold &mdash; CAPA-029 triggered</div></div>
+            <div class="aimc"><div class="aimtop"><div class="aimname">AI-002 &mdash; Quality defect classifier</div><span class="sp sp-warn" style="font-size:10px">Review</span></div><div style="font-size:10px;color:var(--text3);margin-bottom:5px">Drift score: 0.18 &middot; Threshold: 0.20 &middot; GxP: YES</div><div class="dbar"><div class="dfill" style="width:18%;background:var(--amber)"></div></div><div style="font-size:10px;color:var(--amber-dk);margin-top:3px">Approaching threshold &mdash; monitoring increased</div></div>
+            <div class="aimc"><div class="aimtop"><div class="aimname">AI-004 &mdash; Risk signal engine</div><span class="sp sp-pass" style="font-size:10px">Stable</span></div><div style="font-size:10px;color:var(--text3);margin-bottom:5px">Drift score: 0.04 &middot; Threshold: 0.20 &middot; GxP: YES</div><div class="dbar"><div class="dfill" style="width:4%;background:var(--green)"></div></div><div style="font-size:10px;color:var(--green-dk);margin-top:3px">Well within threshold &mdash; next review in 30 days</div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Validation pipeline</div></div>
+            <div class="mr"><div class="ml">Validated (8)</div><div class="mt2"><div class="mf mfg" style="width:57%"></div></div><div class="mp">57%</div></div>
+            <div class="mr"><div class="ml">In validation (3)</div><div class="mt2"><div class="mf mfa" style="width:21%"></div></div><div class="mp">21%</div></div>
+            <div class="mr"><div class="ml">Not started (3)</div><div class="mt2"><div class="mf mfr" style="width:21%"></div></div><div class="mp">21%</div></div>
+            <div class="wbox">&#9888; 3 GxP AI models not yet validated. Priority: AI-009 ( classifier). Target: 100% by end of Phase 2.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAPA MANAGER -->
+    <div class="sec" id="sec-capa">
+      <div class="g4">
+        <div class="kc"><div class="kl">Total open CAPAs</div><div class="kv">7</div><div class="kt tn">Across all layers</div><div class="kbar"><div class="kfill" style="width:43%;background:var(--amber)"></div></div></div>
+        <div class="kc"><div class="kl">Overdue</div><div class="kv" style="color:var(--red)">3</div><div class="kt td">Auto-alerts sent</div><div class="kbar"><div class="kfill" style="width:43%;background:var(--red)"></div></div></div>
+        <div class="kc"><div class="kl">Closed this week</div><div class="kv">3</div><div class="kt tu">Re-tested &amp; verified</div><div class="kbar"><div class="kfill" style="width:43%;background:var(--green)"></div></div></div>
+        <div class="kc"><div class="kl">Avg closure time</div><div class="kv" style="font-size:18px;padding-top:2px">11d</div><div class="kt tu">&#8595; 4d vs last quarter</div><div class="kbar"><div class="kfill" style="width:72%;background:var(--green)"></div></div></div>
+      </div>
+      <div class="g2">
+        <div class="panel">
+          <div class="ph"><div class="ptitle">All open CAPAs</div><span class="ptag pt-r">3 overdue</span></div>
+          <table class="tbl">
+            <thead><tr><th>CAPA ID</th><th>Description</th><th>Control</th><th>Owner</th><th>Due date</th><th>Progress</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tid">CAPA-031</span></td><td><div class="tname">Veeva CAPA closure gap</div><div class="tsub">Layer B &middot; GxP</div></td><td>B-07</td><td>J. Patel</td><td style="color:var(--red-dk);font-size:11px">3d overdue</td><td><div style="width:55px;height:5px;background:#EEF0F4;border-radius:3px;overflow:hidden"><div style="width:35%;height:100%;background:var(--red);border-radius:3px"></div></div></td><td><span class="sp sp-fail">Overdue</span></td></tr>
+              <tr><td><span class="tid">CAPA-030</span></td><td><div class="tname">Inspection readiness gap</div><div class="tsub">Layer B &middot; SOX</div></td><td>B-14</td><td>M. Singh</td><td style="color:var(--amber-dk);font-size:11px">Due in 2d</td><td><div style="width:55px;height:5px;background:#EEF0F4;border-radius:3px;overflow:hidden"><div style="width:60%;height:100%;background:var(--amber);border-radius:3px"></div></div></td><td><span class="sp sp-warn">In progress</span></td></tr>
+              <tr><td><span class="tid">CAPA-029</span></td><td><div class="tname">AI drift remediation</div><div class="tsub">Layer C &middot; GxP</div></td><td>C-14</td><td>R. Chen</td><td style="color:var(--amber-dk);font-size:11px">Due in 5d</td><td><div style="width:55px;height:5px;background:#EEF0F4;border-radius:3px;overflow:hidden"><div style="width:55%;height:100%;background:var(--amber);border-radius:3px"></div></div></td><td><span class="sp sp-warn">In progress</span></td></tr>
+              <tr><td><span class="tid">CAPA-028</span></td><td><div class="tname">Evidence chain integrity</div><div class="tsub">Layer D &middot; 21 CFR</div></td><td>B-22</td><td>R. Torres</td><td style="font-size:11px;color:var(--text3)">Due in 5d</td><td><div style="width:55px;height:5px;background:#EEF0F4;border-radius:3px;overflow:hidden"><div style="width:45%;height:100%;background:var(--blue-md);border-radius:3px"></div></div></td><td><span class="sp sp-mon">In progress</span></td></tr>
+              <tr><td><span class="tid">CAPA-027</span></td><td><div class="tname">APAC process adoption</div><div class="tsub">Layer A &middot; EMA</div></td><td>A-03</td><td>S. Kim</td><td style="font-size:11px;color:var(--text3)">Due in 12d</td><td><div style="width:55px;height:5px;background:#EEF0F4;border-radius:3px;overflow:hidden"><div style="width:72%;height:100%;background:var(--blue-md);border-radius:3px"></div></div></td><td><span class="sp sp-mon">On track</span></td></tr>
+              <tr><td><span class="tid">CAPA-026</span></td><td><div class="tname">Model N L2 drift</div><div class="tsub">Layer B &middot; SaaS</div></td><td>B-03</td><td>A. Kumar</td><td style="font-size:11px;color:var(--text3)">Due in 9d</td><td><div style="width:55px;height:5px;background:#EEF0F4;border-radius:3px;overflow:hidden"><div style="width:78%;height:100%;background:var(--green);border-radius:3px"></div></div></td><td><span class="sp sp-mon">On track</span></td></tr>
+              <tr><td><span class="tid">CAPA-025</span></td><td><div class="tname">Risk register BTS sync</div><div class="tsub">Layer C &middot; Ops</div></td><td>C-12</td><td>T. Brown</td><td style="font-size:11px;color:var(--text3)">Due in 2d</td><td><div style="width:55px;height:5px;background:#EEF0F4;border-radius:3px;overflow:hidden"><div style="width:88%;height:100%;background:var(--green);border-radius:3px"></div></div></td><td><span class="sp sp-pass">Nearly done</span></td></tr>
+            </tbody>
+          </table>
+          <button class="btn" onclick="openModal()">+ Raise new CAPA</button>
+        </div>
+        <div class="gcol">
+          <div class="panel">
+            <div class="ph"><div class="ptitle">CAPA by layer</div></div>
+            <div class="mr"><div class="ml">Layer A &mdash; Governance</div><div class="mt2"><div class="mf mfg" style="width:14%"></div></div><div class="mp">1</div></div>
+            <div class="mr"><div class="ml">Layer B &mdash; Controls</div><div class="mt2"><div class="mf mfr" style="width:57%"></div></div><div class="mp">4</div></div>
+            <div class="mr"><div class="ml">Layer C &mdash; Risk</div><div class="mt2"><div class="mf mfa" style="width:29%"></div></div><div class="mp">2</div></div>
+            <div class="mr"><div class="ml">Layer D &mdash; Evidence</div><div class="mt2"><div class="mf mfb" style="width:14%"></div></div><div class="mp">1</div></div>
+            <div class="ibox">Layer B holds the most CAPAs &mdash; controls execution is the highest-priority remediation area this cycle.</div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Closed this week</div><span class="ptag pt-g">3 closed</span></div>
+            <div class="ai2"><div class="atime">Mon</div><div class="adot" style="background:var(--green)"></div><div class="atxt">CAPA-022 closed &mdash; SAP change control re-tested and passed</div></div>
+            <div class="ai2"><div class="atime">Wed</div><div class="adot" style="background:var(--green)"></div><div class="atxt">CAPA-023 closed &mdash; User access review verified</div></div>
+            <div class="ai2"><div class="atime">Thu</div><div class="adot" style="background:var(--green)"></div><div class="atxt">CAPA-024 closed &mdash; EU Annex 11 traceability complete</div></div>
+          </div>
+          <div class="panel">
+            <div class="ph"><div class="ptitle">Escalation alerts</div></div>
+            <div class="ai2"><div class="atime">Now</div><div class="adot" style="background:var(--red)"></div><div class="atxt">CAPA-031 &mdash; 3 days overdue &middot; Escalated to QA Director</div></div>
+            <div class="ai2"><div class="atime">2h</div><div class="adot" style="background:var(--amber)"></div><div class="atxt">CAPA-030 &mdash; Due in 2 days &middot; Reminder sent to M. Singh</div></div>
+            <div class="ai2"><div class="atime">6h</div><div class="adot" style="background:var(--amber)"></div><div class="atxt">CAPA-029 &mdash; AI drift CAPA &middot; 5 days remaining</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ADD CONTROL MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3>Add new control / raise CAPA</h3>
+    <div class="mrow2">
+      <div class="form-row"><label>Control ID</label><input type="text" placeholder="e.g. B-24" /></div>
+      <div class="form-row"><label>UCA Layer</label><select><option>A &mdash; Governance</option><option>B &mdash; Controls Assurance</option><option>C &mdash; Risk Management</option><option>D &mdash; Evidence &amp; Audit</option></select></div>
+    </div>
+    <div class="form-row"><label>Control name</label><input type="text" placeholder="e.g. CAPA closed-loop validation" /></div>
+    <div class="form-row"><label>System / platform</label><input type="text" placeholder="e.g. Veeva Vault, SAP, Model N" /></div>
+    <div class="mrow2">
+      <div class="form-row"><label>Regulation</label><select><option>FDA 21 CFR Part 11</option><option>EU Annex 11</option><option>ICH Q10</option><option>GAMP 5 / CSA</option><option>SOX 302/404</option><option>MHRA</option></select></div>
+      <div class="form-row"><label>Execution frequency</label><select><option>Real-time</option><option>Hourly</option><option>4-hourly</option><option>Daily</option><option>Weekly</option><option>Monthly</option><option>Per event</option></select></div>
+    </div>
+    <div class="form-row"><label>Owner</label><input type="text" placeholder="Full name" /></div>
+    <div class="form-row"><label>Description / notes</label><textarea placeholder="Describe what this control tests and what a failure means..."></textarea></div>
+    <div class="mrow2">
+      <div class="form-row"><label>Initial status</label><select><option>Passing</option><option>Monitoring</option><option>Drifting</option><option>Failing</option></select></div>
+      <div class="form-row"><label>Risk severity</label><select><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div>
+    </div>
+    <div class="modal-actions">
+      <button class="mcan" onclick="closeModal()">Cancel</button>
+      <button class="msave" onclick="saveControl()">Add control</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const pages={
+  overview:{t:'UCA Overview \u2014 Quality Intelligence Dashboard',s:'Real-time control posture across all four UCA layers \u00b7 SRM Tech'},
+  governance:{t:'Layer A \u2014 Governance',s:'SOP mapping, regulatory library, policy framework \u00b7 UCA'},
+  controls:{t:'Layer B \u2014 Controls Assurance',s:'L2 monitoring, automated control testing, CAPA \u00b7 UCA'},
+  risk:{t:'Layer C \u2014 Risk Management',s:'Live risk register, go/no-go decisions, AI ops \u00b7 UCA'},
+  evidence:{t:'Layer D \u2014 Evidence & Audit',s:'Evidence packages, traceability matrix, audit readiness \u00b7 UCA'},
+  aiops:{t:'AI Ops \u2014 Model Governance',s:'AI model inventory, drift detection, GxP validation \u00b7 UCA'},
+  capa:{t:'CAPA Manager',s:'Corrective and preventive actions across all UCA layers \u00b7 SRM Tech'}
+};
+function go(id,el){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.nav').forEach(n=>n.classList.remove('on'));
+  document.getElementById('sec-'+id).classList.add('on');
+  if(el)el.classList.add('on');
+  document.getElementById('pg-title').textContent=pages[id].t;
+  document.getElementById('pg-sub').textContent=pages[id].s;
+}
+function filterCtrl(type){
+  document.querySelectorAll('#ctrl-body tr').forEach(r=>{
+    r.style.display=(type==='all'||r.dataset.s===type)?'':'none';
+  });
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('fb-'+type).classList.add('on');
+}
+function openModal(){document.getElementById('modal').classList.add('open')}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function saveControl(){alert('Control added successfully! It will appear in the live monitor on the next cycle.');closeModal();}
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+</script>
+</body>
+</html>
